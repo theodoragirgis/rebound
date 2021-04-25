@@ -1,0 +1,19 @@
+site_name: REBOUND
+nav:
+  - Home: 
+    - index.md
+    - quickstart.md
+    - install.md
+    - acknowledgements.md
+  - 'Python Documentation': pythonapi.md
+  - 'C Documentation': capi.md
+  - Examples: examples.md
+theme:
+  name: material
+  logo: img/rebound.png
+  favicon: img/favicon.ico
+  features:
+    - navigation.tabs
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
