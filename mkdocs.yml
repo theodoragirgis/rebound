@@ -5,8 +5,12 @@ nav:
     - quickstart.md
     - install.md
     - acknowledgements.md
-  - 'Python Documentation': pythonapi.md
-  - 'C Documentation': capi.md
+  - pythonapi.md
+  - 'C Documentation':
+    - c_installation.md
+    - c_compile.md
+    - c_compile_errors.md
+    - c_structure.md
   - Examples: examples.md
 theme:
   name: material
@@ -17,3 +21,9 @@ theme:
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: true
+extra_javascript:
+  - javascripts/config.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js      
