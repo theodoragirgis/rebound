@@ -6,8 +6,9 @@ REBOUND is an N-body integrator, i.e. a software package that can integrate the 
 
 ## Features
 
-* Symplectic integrators (WHFast, WHFastHelio, SEI, LEAPFROG)
-* High order symplectic integrators (SABA, WH Kernel methods)
+* Symplectic integrators (WHFast, SEI, LEAPFROG, EOS)
+* High order symplectic integrators for integrating planetary systems (SABA, WH Kernel methods)
+* Hybrid symplectic integrators for planetary dynamics with close encounters (MERCURIUS)
 * High accuracy non-symplectic integrator with adaptive timestepping (IAS15)
 * Support for collisional/granular dynamics, various collision detection routines
 * The code is written entirely in C, conforms to the ISO standard C99 and can be used as a thread-safe shared library
@@ -56,3 +57,12 @@ There are several papers describing the functionality of REBOUND.
 8. Rein, Hernandez, Tamayo, Brown, Eckels, Holmes, Lau, Leblanc & Silburt 2019 (Monthly Notices of the Royal Astronomical Society, Volume 485, Issue 4, p.5490-5497) describes the hyrbid symplectic integrator MERCURIUS. <https://ui.adsabs.harvard.edu/abs/2019MNRAS.485.5490R>
 
 9. Rein, Tamayo & Brown 2019 (Monthly Notices of the Royal Astronomical Society, Volume 489, Issue 4, November 2019, Pages 4632-4640) describes the implementation of the high order symplectic intergators SABA, SABAC, SABACL, WHCKL, WHCKM, and WHCKC. <https://ui.adsabs.harvard.edu/abs/>
+
+## License
+
+REBOUND is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+REBOUND is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with REBOUND.  If not, see <http://www.gnu.org/licenses/>.
+

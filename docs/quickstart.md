@@ -18,9 +18,9 @@ import rebound
 # Create Simulation object
 sim = rebound.Simulation()
 # Add particle to rebound
-sim.add( m=1. )
-sim.add( m=1e-3, a=1., e=0.1 ) # Planet 1
-sim.add( a=1.4, e=0.1 )        # Massless test particle
+sim.add(m=1.)
+sim.add(m=1e-3, a=1., e=0.1) # Planet 1
+sim.add(a=1.4, e=0.1)        # Massless test particle
 
 # Integrate the particles with the default IAS15 integrator
 sim.integrate(100)

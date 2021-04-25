@@ -438,14 +438,11 @@ class Orbit(Structure):
 
 class Simulation(Structure):
     """
-    REBOUND Simulation Object.
+    This is the REBOUND Simulation Class.
+    In encapsulated an entire REBOUND simulation and is an abstraction of the C struct reb_simulation.
 
-    This object encapsulated an entire REBOUND simulation. 
-    It is an abstraction of the C struct reb_simulation.
-    You can create multiple REBOUND simulations (the c library is thread safe). 
-
-    Examples
-    --------
+    ### Examples
+    
     Most simulation parameters can be directly changed with the property syntax:
 
     >>> sim = rebound.Simulation()
