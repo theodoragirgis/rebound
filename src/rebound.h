@@ -26,27 +26,7 @@
 #ifndef _MAIN_H
 #define _MAIN_H
 
-#ifdef __cplusplus
-
-// At least GCC and clang support the restrict keyword as an extension.
-#if defined(__GNUC__) || defined(__clang__)
-
-#define REBOUND_RESTRICT __restrict__
-
-#else
-
-// For other compilers, we disable it.
-#define REBOUND_RESTRICT
-
-#endif
-
-extern "C" {
-
-#else
-
 #define REBOUND_RESTRICT restrict
-
-#endif
 
 #include <inttypes.h>
 #include <stdint.h>
@@ -2274,10 +2254,4 @@ struct reb_display_data {
  * @endcond
  */
 
-#ifdef __cplusplus
-}
-#endif
-
-#undef REBOUND_RESTRICT
-
-#endif
+#endif // _MAIN_H
