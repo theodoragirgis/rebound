@@ -11,7 +11,9 @@ nav:
     - c_compile.md
     - c_compile_errors.md
     - c_simpleexample.md
-    - c_structures.md
+    - 'Structures':
+      - c_structures.md
+      - c_integratorstructures.md
   - Examples: examples.md
 theme:
   name: material
