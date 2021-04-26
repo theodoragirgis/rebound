@@ -45,7 +45,7 @@ Member                      | Description
 
 ## `struct reb_simulation_integrator_ias15`
 
-The `reb_simulation_integrator_ias15` structure contains the configuration and data structures used by the IAS15 integrator.
+The `reb_simulation_integrator_ias15` structure contains the configuration and data structures used by the high order IAS15 integrator.
 
 
 Member                      | Description
@@ -55,3 +55,17 @@ Member                      | Description
 `unsigned int epsilon_global` | This flag determines how the relative acceleration error is estimated. If set to 1, IAS15 estimates the fractional error via `max(acceleration_error)/max(acceleration)` where the maximum is taken over all particles. If set to 0, the fractional error is estimates via `max(acceleration_error/acceleration)`.
 
 All other members of this structure are only for internal IAS15 use and should not be changed manually.
+
+## `struct reb_simulation_integrator_mercurius`
+
+The `reb_simulation_integrator_mercurius` structure contains the configuration and data structures used by the hybrid symplectic MERCURIUS integrator.
+
+Member                      | Description
+--------------------------- | --------------
+`double (*L) (const struct reb_simulation* const r, double d, double dcrit)`  |  This is a function pointer to the force switching function. If NULL (the default), the MERCURY switching function will be used. The argument `d` is the distance between two particles. The argument `dcrit` is the maximum critical distances of the two particles. The return value is a scalar between 0 and 1. If this function always returns 1, then the integrator effectively becomes the standard Wisdom-Holman integrator.
+`double hillfac`            |  The critical switchover radii of particles are calculated automatically based on multiple criteria. One criterion calculates the Hill radius of particles and then multiplies it with the `hillfac` parameter. The parameter is in units of the Hill radius. The default value is 3. 
+`unsigned int recalculate_coordinates_this_timestep`  | Setting this flag to one will recalculate heliocentric coordinates from the particle structure at the beginning of the next timestep. After a single timestep, the flag gets set back to 0. If one changes a particles manually after a timestep, then one needs to set this flag to 1 before the next timestep.
+`unsigned int recalculate_dcrit_this_timestep`        | Setting this flag to one will recalculate the critical switchover distances dcrit at the beginning of the next timestep. After one timestep, the flag gets set back to 0. If you want to recalculate dcrit at every timestep, you also need to set this flag to 1 before every timestep.
+`unsigned int safe_mode`                              | If this flag is set to 1 (the default), the integrator will recalculate heliocentric coordinates and synchronize after every timestep to avoid problems with outputs or particle modifications between timesteps. Setting this flag to 0 will result in a speedup, but care must be taken to synchronize and recalculate coordinates manually if needed.
+
+All other members of this structure are only for internal use and should not be changed manually.
