@@ -69,3 +69,101 @@ Member                      | Description
 `unsigned int safe_mode`                              | If this flag is set to 1 (the default), the integrator will recalculate heliocentric coordinates and synchronize after every timestep to avoid problems with outputs or particle modifications between timesteps. Setting this flag to 0 will result in a speedup, but care must be taken to synchronize and recalculate coordinates manually if needed.
 
 All other members of this structure are only for internal use and should not be changed manually.
+
+
+## `struct reb_simulation_integrator_sei`
+
+The `reb_simulation_integrator_sei` structure contains the configuration and data structures used by the Symplectic Epicycle Integrator (SEI).
+
+Member                      | Description
+--------------------------- | --------------
+`double OMEGA`              | Epicyclic/orbital frequency.
+`double OMEGAZ`             | Epicyclic frequency in vertical direction.
+
+All other members of this structure are only for internal use and should not be changed manually.
+
+
+## `struct reb_simulation_integrator_saba`
+
+The `reb_simulation_integrator_saba` structure contains the configuration and data structures used by the SABA integrator family.
+
+Member                              | Description
+----------------------------------- | --------------
+`unsigned int type`                 | This parameter specifies which SABA integrator type is used. See below for possible values.
+`unsigned int safe_mode`            | The same mode flag has the same functionality as in WHFast. Default is 1. Setting this to 0 will provide a speedup but care must be taken with synchronizing integration steps and modifying particles.
+`unsigned int keep_unsynchronized`  | This flag determines if the inertial coordinates generated are discarded in subsequent timesteps (cached Jacobi coordinates are used instead). The default is 0. Set this flag to 1 if you require outputs and bit-wise reproducibility 
+
+### SABA types
+The possible SABA integrator types are:
+
+Numerical value     |  Constant name      | Description 
+------------------- | ------------------- | ----------------------------------
+0x0                 | `REB_SABA_1`        | WH
+0x1                 | `REB_SABA_2`        | SABA2
+0x2                 | `REB_SABA_3`        | SABA3
+0x3                 | `REB_SABA_4`        | SABA4
+0x100               | `REB_SABA_CM_1`     | SABACM1 (Modified kick corrector)
+0x101               | `REB_SABA_CM_2`     | SABACM2 (Modified kick corrector)
+0x102               | `REB_SABA_CM_3`     | SABACM3 (Modified kick corrector)
+0x103               | `REB_SABA_CM_4`     | SABACM4 (Modified kick corrector)
+0x200               | `REB_SABA_CL_1`     | SABACL1 (lazy corrector)
+0x201               | `REB_SABA_CL_2`     | SABACL2 (lazy corrector)
+0x202               | `REB_SABA_CL_3`     | SABACL3 (lazy corrector)
+0x203               | `REB_SABA_CL_4`     | SABACL4 (lazy corrector)
+0x4                 | `REB_SABA_10_4`     | SABA(10,4), 7 stages
+0x5                 | `REB_SABA_8_6_4`    | SABA(8,6,4), 7 stages
+0x6                 | `REB_SABA_10_6_4`   | SABA(10,6,4), 8 stages, default
+0x7                 | `REB_SABA_H_8_4_4`  | SABAH(8,4,4), 6 stages
+0x8                 | `REB_SABA_H_8_6_4`  | SABAH(8,6,4), 8 stages
+0x9                 | `REB_SABA_H_10_6_4` | SABAH(10,6,4), 9 stages
+
+
+## `struct reb_simulation_integrator_whfast`
+
+The `reb_simulation_integrator_whfast` structure contains the configuration and data structures used by the WHFast integrator.
+
+Member                              | Description
+----------------------------------- | --------------
+`unsigned int corrector`            | This variable turns on/off different first symplectic correctors for WHFast. By default first symplectic correctors are off (0). See below for possible values.
+`unsigned int corrector2`           | This variable turns on/off second symplectic correctors for WHFast. By default second symplectic correctors are off (0). ee below for possible values. Set to 1 to use second symplectic correctors.
+`unsigned int kernel`               | This variable determines the kernel of the WHFast integrator. By default it uses the standard WH kick step. See below for other options.
+`unsigned int coordinates`          | Chooses the coordinate system for the WHFast algorithm. Default is Jacobi Coordinates. See below for other options.
+`unsigned int recalculate_coordinates_this_timestep` | Setting this flag to one will recalculate Jacobi/heliocentric coordinates from the particle structure in the next timestep. After the timestep, the flag gets set back to 0. If you want to change particles after every timestep, you also need to set this flag to 1 before every timestep. Default is 0.
+`unsigned int safe_mode`            | If this flag is set (the default), whfast will recalculate the internal coordinates (Jacobi/heliocentric/WHDS) and synchronize every timestep, to avoid problems with outputs or particle modifications between timesteps. Setting it to 0 will result in a speedup, but care must be taken to synchronize and recalculate the internal coordinates when needed. See the AdvWHFast.ipynb tutorial.
+`unsigned int keep_unsynchronized`  | This flag determines if the inertial coordinates generated are discarded in subsequent timesteps (cached Jacobi/heliocentric/WHDS coordinates are used instead). The default is 0. Set this flag to 1 if you require outputs and bit-wise reproducibility
+
+All other members of this structure are only for internal use and should not be changed manually.
+
+
+### Symplectic correctors
+First symplectic correctors (or just *symplectic correctors*) remove error terms up to $O(\epsilon \cdot dt^p)$, where $p$ is the order of the symplectic corrector, and $\epsilon$ is the mass ratio in the system.
+First order correctors implemented in REBOUND are:
+
+Order   | Description
+------- | ----------------
+0       | This turns of all first correctors (default)
+3       | Third order (two-stage) first corrector 
+5       | Fifth order (four-stage) first corrector 
+7       | Seventh order (six-stage) first corrector 
+11      | Eleventh order (ten-stage) first corrector 
+17      | 17th order (16-stage) first corrector 
+
+
+### Kernels
+WHFast supports different kernels. The default kernal is a standard kick step. Kernels implemented in REBOUND are:
+
+Numerical value | Constant name                     | Description
+--------------- | --------------------------------- | ----------------
+0               | `REB_WHFAST_KERNEL_DEFAULT`       | A standard WH kick step (default)
+1               | `REB_WHFAST_KERNEL_MODIFIEDKICK`  | Exact modified kick. This works for Newtonian gravity only. Not additional forces. 
+2               | `REB_WHFAST_KERNEL_COMPOSITION`   | Composition kernel
+3               | `REB_WHFAST_KERNEL_LAZY`          | Lazy implementer's modified kick. This is often the best option.
+     
+### Coordinate systems
+WHFast supports different coordinate systems:    
+
+Numerical value | Constant name                                     | Description
+--------------- | ------------------------------------------------- | ----------------
+0               | `REB_WHFAST_COORDINATES_JACOBI`                   | Jacobi coordinates (default)
+1               | `REB_WHFAST_COORDINATES_DEMOCRATICHELIOCENTRIC`   | Democratic Heliocentric coordinates
+2               | `REB_WHFAST_COORDINATES_WHDS`                     | WHDS coordinates (Hernandez and Dehnen, 2017)
