@@ -248,53 +248,23 @@ struct reb_particle_int {
 };
 
 struct reb_simulation_integrator_janus {
-    /**
-     * @brief Scale of the problem. Positions get divided by this number before the conversion to an integer. 
-     */
     double scale_pos;
-    /**
-     * @brief Scale of the problem. Velocities get divided by this number before the conversion to an integer. 
-     */
     double scale_vel;
-    /**
-     * @brief Order of the scheme. Default is 6. 
-     */
-    unsigned int order; //TODO needs input/output
-    /**
-     * @brief If this flag is set, then janus will recalculate integer coordinates at
-     * the next timestep.
-     */
+    unsigned int order;
     unsigned int recalculate_integer_coordinates_this_timestep;
-    /**
-     * @cond PRIVATE
-     * Internal data structures below. Nothing to be changed by the user.
-     */
-    struct reb_particle_int* REBOUND_RESTRICT p_int;    ///< Integer particle pos/vel
-    unsigned int allocated_N;                   ///< Space allocated in arrays
-    /**
-     * @endcond
-     */
+    struct reb_particle_int* REBOUND_RESTRICT p_int;
+    unsigned int allocated_N;
 };
 
-/**
- * @defgroup MiscRebStructs Miscellaneous REBOUND structures
- * @{
-*/
-
-/**
- * @brief Collision structure describing a single collision.
- * @details This structure is used to save a collision during collision search. 
- * It is passed to the collision_resolve function.
- */
 struct reb_collision{
-    int p1;         ///< One of the colliding particles
-    int p2;         ///< One of the colliding particles
-    struct reb_ghostbox gb; ///< Ghostbox (of particle p1, used for periodic and shearing sheet boundary conditions)
+    int p1;
+    int p2;
+    struct reb_ghostbox gb;
 #if defined(COLLISIONS_SWEEP) || defined(COLLISIONS_SWEEPPHI)
     double time;        ///< Time of collision.
     int crossing;       ///< Collision occurs at the interface of two sweep boxes.
 #endif // COLLISIONS_SWEEP
-    int ri;         ///< Index of rootcell (needed for MPI only).
+    int ri;
 };
 
 /**
