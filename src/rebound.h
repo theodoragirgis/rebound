@@ -215,43 +215,29 @@ struct reb_simulation_integrator_whfast {
     unsigned int recalculate_coordinates_but_not_synchronized_warning;
 };
 
-/**
- * @brief Available operator splitting methods for phi0 and phi1 in EOS integrators.
- */
 enum REB_EOS_TYPE {
-    REB_EOS_LF = 0x00,      // 2nd order, standard leap-frog
-    REB_EOS_LF4 = 0x01,     // 4th order, three function evaluations
-    REB_EOS_LF6 = 0x02,     // 6th order, nine function evaluations
-    REB_EOS_LF8 = 0x03,     // 8th order, seventeen funtion evaluations, see Blanes & Casa (2016), p91
-    REB_EOS_LF4_2 = 0x04,   // generalized order (4,2), two force evaluations, McLachlan 1995
-    REB_EOS_LF8_6_4= 0x05,  // generalized order (8,6,4), seven force evaluations
-    REB_EOS_PLF7_6_4= 0x06, // generalized order (7,6,4), three force evaluations, pre- and post-processors
-    REB_EOS_PMLF4 = 0x07,   // 4th order, one modified force evaluation, pre- and post-processors, Blanes et al. (1999)
-    REB_EOS_PMLF6 = 0x08,   // 6th order, three modified force evaluations, pre- and post-processors, Blanes et al. (1999)
+    REB_EOS_LF = 0x00, 
+    REB_EOS_LF4 = 0x01,
+    REB_EOS_LF6 = 0x02,
+    REB_EOS_LF8 = 0x03, 
+    REB_EOS_LF4_2 = 0x04,
+    REB_EOS_LF8_6_4= 0x05,
+    REB_EOS_PLF7_6_4= 0x06,
+    REB_EOS_PMLF4 = 0x07,
+    REB_EOS_PMLF6 = 0x08,
 };
 
-/**
- * @brief This structure contains variables used by the EOS integrator family.
- */
 struct reb_simulation_integrator_eos {
-    enum REB_EOS_TYPE phi0;         ///< Outer operator splitting scheme
-    enum REB_EOS_TYPE phi1;         ///< Inner operator splitting scheme
-    unsigned int n;                 ///
-
-    unsigned int safe_mode;         ///< If set to 0, always combine drift steps at the beginning and end of phi0. If set to 1, n needs to be bigger than 1.
-    unsigned int is_synchronized;   ///< Flag to indicate if the drift step at the end of the last timestep has been taken.
+    enum REB_EOS_TYPE phi0;
+    enum REB_EOS_TYPE phi1;
+    unsigned int n;
+    unsigned int safe_mode;
+    unsigned int is_synchronized;
 };
 
 
-
-/**
- * @cond PRIVATE
- * Internal data structures below. Nothing to be changed by the user.
- */
+// Integer-based positions and velocities for particles. Used in JANUS integrator. 
 #define REB_PARTICLE_INT_TYPE int64_t
-/**
- * @brief Integer positions and velocities for particles. Used in JANUS integrator. 
- */
 struct reb_particle_int {
     REB_PARTICLE_INT_TYPE x;
     REB_PARTICLE_INT_TYPE y;
@@ -260,9 +246,6 @@ struct reb_particle_int {
     REB_PARTICLE_INT_TYPE vy;
     REB_PARTICLE_INT_TYPE vz;
 };
-/**
- * @endcond
- */
 
 struct reb_simulation_integrator_janus {
     /**

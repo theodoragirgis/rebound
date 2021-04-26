@@ -167,3 +167,35 @@ Numerical value | Constant name                                     | Descriptio
 0               | `REB_WHFAST_COORDINATES_JACOBI`                   | Jacobi coordinates (default)
 1               | `REB_WHFAST_COORDINATES_DEMOCRATICHELIOCENTRIC`   | Democratic Heliocentric coordinates
 2               | `REB_WHFAST_COORDINATES_WHDS`                     | WHDS coordinates (Hernandez and Dehnen, 2017)
+
+
+
+
+## `struct reb_simulation_integrator_eos`
+
+The `reb_simulation_integrator_eos` structure contains the configuration and data structures used by the Embedded Operator Splitting integrator (EOS).
+
+Member                              | Description
+----------------------------------- | --------------
+`unsigned int phi0`                 | Outer operator splitting scheme (see below for options)
+`unsigned int phi1`                 | Inner operator splitting scheme (see below for options)
+`unsigned int n`                    | Number of sub-timesteps. Default: 2. 
+`unsigned int safe_mode`            | If set to 0, always combine drift steps at the beginning and end of `phi0`. If set to 1, `n` needs to be bigger than 1.
+
+All other members of this structure are only for internal use and should not be changed manually.
+
+### Operator Splitting methods
+
+The following operator splitting methods for `phi0` and `phi1` are supported in the EOS integrator.
+
+Numerical value | Constant name         | Description
+--------------- | --------------------- | -------------------------------------------------
+0x00            | `REB_EOS_LF`          | 2nd order, standard leap-frog
+0x01            | `REB_EOS_LF4`         | 4th order, three function evaluations
+0x02            | `REB_EOS_LF6`         | 6th order, nine function evaluations
+0x03            | `REB_EOS_LF8`         | 8th order, seventeen funtion evaluations, see Blanes & Casa (2016), p91
+0x04            | `REB_EOS_LF4_2`       | generalized order (4,2), two force evaluations, McLachlan 1995
+0x05            | `REB_EOS_LF8_6_4`     | generalized order (8,6,4), seven force evaluations
+0x06            | `REB_EOS_PLF7_6_4`    | generalized order (7,6,4), three force evaluations, pre- and post-processors
+0x07            | `REB_EOS_PMLF4`       | 4th order, one modified force evaluation, pre- and post-processors, Blanes et al. (1999)
+0x08            | `REB_EOS_PMLF6`       | 6th order, three modified force evaluations, pre- and post-processors, Blanes et al. (1999)
