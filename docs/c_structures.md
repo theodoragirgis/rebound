@@ -3,7 +3,7 @@
 This page describes the main data structures used in REBOUND.
 The data structures related to integrators can be found on a [separate page](c_integratorstructures.md).
 
-## `struct reb_particle`
+## `reb_particle`
 
 This structure represents a single particle in REBOUND.
 
@@ -27,7 +27,7 @@ Member                      | Description
 `struct reb_simulation* sim`| Pointer to the parent simulation.
 
 
-## `struct reb_ghostbox`
+## `reb_ghostbox`
 
 This structure contains the relative position and velocity of a ghostbox. 
 Ghostboxes are used for periodic or shear-periodic boundary conditions. 

@@ -5,7 +5,6 @@ nav:
     - quickstart.md
     - install.md
     - acknowledgements.md
-  - pythonapi.md
   - 'C Documentation':
     - c_installation.md
     - c_compile.md
@@ -14,6 +13,9 @@ nav:
     - 'Structures':
       - c_structures.md
       - c_integratorstructures.md
+    - 'Functions':
+      - c_functions.md
+  - pythonapi.md
   - Examples: examples.md
 theme:
   name: material

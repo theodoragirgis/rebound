@@ -1,3 +1,5 @@
+# Python Documentation 
+
 ## Class `rebound.Simulation`
 This is the REBOUND Simulation Class.
 In encapsulated an entire REBOUND simulation and is an abstraction of the C struct reb_simulation.

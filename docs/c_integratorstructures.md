@@ -19,7 +19,7 @@ r->ri_ias15->expsilon = 0; // Make IAS15 non-adaptive
 
 
 
-## `struct reb_simulation_integrator_ias15`
+## `reb_simulation_integrator_ias15`
 
 The `reb_simulation_integrator_ias15` structure contains the configuration and data structures used by the high order IAS15 integrator.
 
@@ -32,7 +32,7 @@ Member                      | Description
 
 All other members of this structure are only for internal IAS15 use and should not be changed manually.
 
-## `struct reb_simulation_integrator_mercurius`
+## `reb_simulation_integrator_mercurius`
 
 The `reb_simulation_integrator_mercurius` structure contains the configuration and data structures used by the hybrid symplectic MERCURIUS integrator.
 
@@ -47,7 +47,7 @@ Member                      | Description
 All other members of this structure are only for internal use and should not be changed manually.
 
 
-## `struct reb_simulation_integrator_sei`
+## `reb_simulation_integrator_sei`
 
 The `reb_simulation_integrator_sei` structure contains the configuration and data structures used by the Symplectic Epicycle Integrator (SEI).
 
@@ -59,7 +59,7 @@ Member                      | Description
 All other members of this structure are only for internal use and should not be changed manually.
 
 
-## `struct reb_simulation_integrator_saba`
+## `reb_simulation_integrator_saba`
 
 The `reb_simulation_integrator_saba` structure contains the configuration and data structures used by the SABA integrator family.
 
@@ -94,7 +94,7 @@ Numerical value     |  Constant name      | Description
 0x9                 | `REB_SABA_H_10_6_4` | SABAH(10,6,4), 9 stages
 
 
-## `struct reb_simulation_integrator_whfast`
+## `reb_simulation_integrator_whfast`
 
 The `reb_simulation_integrator_whfast` structure contains the configuration and data structures used by the WHFast integrator.
 
@@ -147,7 +147,7 @@ Numerical value | Constant name                                     | Descriptio
 
 
 
-## `struct reb_simulation_integrator_eos`
+## `reb_simulation_integrator_eos`
 
 The `reb_simulation_integrator_eos` structure contains the configuration and data structures used by the Embedded Operator Splitting integrator (EOS).
 
@@ -175,3 +175,17 @@ Numerical value | Constant name         | Description
 0x06            | `REB_EOS_PLF7_6_4`    | generalized order (7,6,4), three force evaluations, pre- and post-processors
 0x07            | `REB_EOS_PMLF4`       | 4th order, one modified force evaluation, pre- and post-processors, Blanes et al. (1999)
 0x08            | `REB_EOS_PMLF6`       | 6th order, three modified force evaluations, pre- and post-processors, Blanes et al. (1999)
+
+
+## `reb_simulation_integrator_janus`
+
+The `reb_simulation_integrator_janus` structure contains the configuration and data structures used by the bib-wise reversible JANUS integrator.
+
+Member                              | Description
+----------------------------------- | --------------
+`double scale_pos`                  | Scale of the problem. Positions get divided by this number before the conversion to an integer. Default: $10^{-16}$.
+`double scale_vel`                  | Scale of the problem. Velocities get divided by this number before the conversion to an integer. Default: $10^{-16}$. 
+`unsigned int order`                | The order of the scheme. Default is 6.
+`unsigned int recalculate_integer_coordinates_this_timestep` | If this flag is set, then JANUS will recalculate the integer coordinates from floating point coordinates at the next timestep.
+
+All other members of this structure are only for internal use and should not be changed manually.
