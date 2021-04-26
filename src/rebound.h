@@ -34,10 +34,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
-#ifndef M_PI
-// Make sure M_PI is defined. 
-#define M_PI           3.14159265358979323846       ///< The mathematical constant pi.
-#endif
+#include <math.h>
 #ifdef MPI
 #include "mpi.h"
 #endif // MPI
