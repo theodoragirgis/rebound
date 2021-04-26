@@ -14,7 +14,7 @@ nav:
       - c_structures.md
       - c_integratorstructures.md
     - 'Functions':
-      - c_functions.md
+      - c_collisionresolvefunctions.md
   - pythonapi.md
   - Examples: examples.md
 theme:

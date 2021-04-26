@@ -260,10 +260,6 @@ struct reb_collision{
     int p1;
     int p2;
     struct reb_ghostbox gb;
-#if defined(COLLISIONS_SWEEP) || defined(COLLISIONS_SWEEPPHI)
-    double time;        ///< Time of collision.
-    int crossing;       ///< Collision occurs at the interface of two sweep boxes.
-#endif // COLLISIONS_SWEEP
     int ri;
 };
 
@@ -444,12 +440,10 @@ enum REB_BINARY_FIELD_TYPE {
     REB_BINARY_FIELD_TYPE_END = 9999,
 };
 
-/**
- * @brief This structure is used to save and load binary files.
- */
+ // This structure is used to save and load binary files.
 struct reb_binary_field {
-    uint32_t type;  ///< Type of what field (enum of REB_BINARY_FIELD_TYPE)
-    uint64_t size;  ///< Size in bytes of field (only counting what follows, not the binary field, itself).
+    uint32_t type;  // enum of REB_BINARY_FIELD_TYPE
+    uint64_t size;  // Size in bytes of field (only counting what follows, not the binary field, itself).
 };
 
 /**
@@ -1017,21 +1011,9 @@ double reb_integrator_mercurius_L_mercury(const struct reb_simulation* const r, 
  */
 double reb_integrator_mercurius_L_infinite(const struct reb_simulation* const r, double d, double dcrit);           
 
-/**
- * @brief Resolve collision by simply halting the integration and setting r->status=REB_EXIT_COLLISION (Default)
- */
+// Collision resolve functions
 int reb_collision_resolve_halt(struct reb_simulation* const r, struct reb_collision c);
-
-/**
- * @brief Hardsphere collision resolving routine (default).
- */
 int reb_collision_resolve_hardsphere(struct reb_simulation* const r, struct reb_collision c);
-
-/**
- * @brief Merging collision resolving routine.
- * @details Merges particle with higher index into particle of lower index.
- *          Conserves mass, momentum and volume.  
- */
 int reb_collision_resolve_merge(struct reb_simulation* const r, struct reb_collision c);
 
 /** @} */
