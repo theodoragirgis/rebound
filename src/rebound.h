@@ -53,144 +53,75 @@ struct reb_simulation;
 struct reb_display_data;
 struct reb_treecell;
 
-/**
- * @brief Structure representing one REBOUND particle.
- * @details This structure is used to represent one particle. 
- * If this structure is changed, the corresponding python structure
- * needs to be changes as well. Also update the equivalent declaration 
- * for MPI in communications_mpi.c.
- */
 struct reb_particle {
-    double x;           ///< x-position of the particle. 
-    double y;           ///< y-position of the particle. 
-    double z;           ///< z-position of the particle. 
-    double vx;          ///< x-velocity of the particle. 
-    double vy;          ///< y-velocity of the particle. 
-    double vz;          ///< z-velocity of the particle. 
-    double ax;          ///< x-acceleration of the particle. 
-    double ay;          ///< y-acceleration of the particle. 
-    double az;          ///< z-acceleration of the particle. 
-    double m;           ///< Mass of the particle. 
-    double r;           ///< Radius of the particle. 
-    double lastcollision;       ///< Last time the particle had a physical collision.
-    struct reb_treecell* c;     ///< Pointer to the cell the particle is currently in.
-    uint32_t hash;      ///< hash to identify particle.
-    void* ap;           ///< Functionality for externally adding additional properties to particles.
-    struct reb_simulation* sim; ///< Pointer to the parent simulation.
+    double x;
+    double y;
+    double z;
+    double vx;
+    double vy;
+    double vz;
+    double ax;
+    double ay;
+    double az;
+    double m;
+    double r;
+    double lastcollision;
+    struct reb_treecell* c;
+    uint32_t hash; 
+    void* ap; 
+    struct reb_simulation* sim;
 };
 
-/**
- * @brief Generic 3d vector, for internal use only.
- */
+// Generic 3d vector, for internal use only.
 struct reb_vec3d {
-    double x; ///< x coordinate
-    double y; ///< y coordinate
-    double z; ///< z coordinate
+    double x;
+    double y;
+    double z;
 };
 
-/**
- * @brief Generic 7d pointer, for internal use only (IAS15).
- */
+// Generic pointer with 7 elements, for internal use only (IAS15).
 struct reb_dp7 {
-    double* REBOUND_RESTRICT p0; ///< 0 substep
-    double* REBOUND_RESTRICT p1; ///< 1 substep
-    double* REBOUND_RESTRICT p2; ///< 2 substep
-    double* REBOUND_RESTRICT p3; ///< 3 substep
-    double* REBOUND_RESTRICT p4; ///< 4 substep
-    double* REBOUND_RESTRICT p5; ///< 5 substep
-    double* REBOUND_RESTRICT p6; ///< 6 substep
+    double* REBOUND_RESTRICT p0;
+    double* REBOUND_RESTRICT p1;
+    double* REBOUND_RESTRICT p2;
+    double* REBOUND_RESTRICT p3;
+    double* REBOUND_RESTRICT p4;
+    double* REBOUND_RESTRICT p5;
+    double* REBOUND_RESTRICT p6;
 };
 
-/**
- * @details Structure that contains the relative position and velocity of a ghostbox.
- */
 struct reb_ghostbox{
-    double shiftx;      ///< Relative x position
-    double shifty;      ///< Relative y position
-    double shiftz;      ///< Relative z position
-    double shiftvx;     ///< Relative x velocity
-    double shiftvy;     ///< Relative y velocity
-    double shiftvz;     ///< Relative z velocity
+    double shiftx;
+    double shifty;
+    double shiftz;
+    double shiftvx;
+    double shiftvy;
+    double shiftvz;
 };
 
-/**
- * @defgroup IntegratorStructs Configuration structures for integrators
- * @{
-*/
-/**
- * @brief This structure contains variables and pointer used by the IAS15 integrator.
- */
 struct reb_simulation_integrator_ias15 {
-    /**
-     * @brief This parameter controls the accuracy of the integrator.
-     * @details Set to 0 to make IAS15 a non-adaptive integrator.
-     * The default value is: 1e-9.
-     **/
     double epsilon;
-
-    /**
-     * @brief The minimum allowed timestep.
-     * @details The default value is 0 (no minimal timestep).
-     * Set a finite value to this variable if the IAS15 integrator has problems
-     * and the timestep becomes excessively small.
-     **/
     double min_dt;
-    
-    /** 
-     * @brief Flag that determines how relative acceleration error is estimated.
-     * @details If set to 1, estimate the fractional error by max(acceleration_error)/max(acceleration), 
-     * where max is take over all particles. If set to 0, estimate the fractional error by 
-     * max(acceleration_error/acceleration).
-     **/
     unsigned int epsilon_global;
-
-    /**
-     * @brief This parameter controls the order of operations.
-     * @details The order of floating point operations can affect the long term energy error. In the original version of IAS15, 
-     * the order of floating point operations leads to a linear energy error growth when a fixed timestep is used (Hernandez + Holman 2019).
-     * By default, this parameter is now set to 1 which uses a different order and thus avoids this issue. Note that using IAS15 as a 
-     * non-adaptive integrator is rarely beneficial. This flag only exists to allow for backwards compatibility. All new simulations should 
-     * use neworder=1.
-     **/
-    unsigned int neworder;
-
-    
-    /**
-     * @cond PRIVATE
-     * Internal data structures below. Nothing to be changed by the user.
-     */
-    /**
-     * @brief Counter how many times the iteration did not converge. 
-     */
-    unsigned long iterations_max_exceeded;
-
-
-
-    int allocatedN;             ///< Size of allocated arrays.
-
-    double* REBOUND_RESTRICT at;            ///< Temporary buffer for acceleration
-    double* REBOUND_RESTRICT x0;            ///<                      position (used for initial values at h=0)
-    double* REBOUND_RESTRICT v0;            ///<                      velocity
-    double* REBOUND_RESTRICT a0;            ///<                      acceleration
-    double* REBOUND_RESTRICT csx;           ///<                      compensated summation for x
-    double* REBOUND_RESTRICT csv;           ///<                      compensated summation for v
-    double* REBOUND_RESTRICT csa0;          ///<                      compensated summation for a
+    unsigned long iterations_max_exceeded; // Counter how many times the iteration did not converge. 
+    int allocatedN;          
+    double* REBOUND_RESTRICT at;
+    double* REBOUND_RESTRICT x0;
+    double* REBOUND_RESTRICT v0;
+    double* REBOUND_RESTRICT a0;
+    double* REBOUND_RESTRICT csx;
+    double* REBOUND_RESTRICT csv;
+    double* REBOUND_RESTRICT csa0;
 
     struct reb_dp7 g;
     struct reb_dp7 b;
-    struct reb_dp7 csb;         ///< Compensated summation for b
+    struct reb_dp7 csb;  // Compensated summation storage for b
     struct reb_dp7 e;
+    struct reb_dp7 br;   // Used for resetting the b coefficients if a timestep gets rejected
+    struct reb_dp7 er;   // Same for e coefficients
 
-    // The following values are used for resetting the b and e coefficients if a timestep gets rejected
-    struct reb_dp7 br;
-    struct reb_dp7 er;
-
-    int* map;               // map to particles (identity map for non-mercurius simulations)
+    int* map;               // internal map to particles (this is an identity map except when MERCURIUS is used
     int map_allocated_N;    // allocated size for map
-    /**
-     * @endcond
-     */
-
 };
 
 /**
@@ -699,7 +630,6 @@ enum REB_BINARY_FIELD_TYPE {
     REB_BINARY_FIELD_TYPE_EOS_N = 150,
     REB_BINARY_FIELD_TYPE_EOS_SAFEMODE = 151,
     REB_BINARY_FIELD_TYPE_EOS_ISSYNCHRON = 152,
-    REB_BINARY_FIELD_TYPE_IAS15_NEWORDER = 153,
     REB_BINARY_FIELD_TYPE_RAND_SEED = 154,
     REB_BINARY_FIELD_TYPE_TESTPARTICLEHIDEWARNINGS = 155,
 

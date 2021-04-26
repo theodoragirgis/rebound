@@ -10,7 +10,8 @@ nav:
     - c_installation.md
     - c_compile.md
     - c_compile_errors.md
-    - c_structure.md
+    - c_simpleexample.md
+    - c_structures.md
   - Examples: examples.md
 theme:
   name: material
