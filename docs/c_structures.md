@@ -1,6 +1,7 @@
-# Main structures
+# Other structures
 
 This page describes the main data structures used in REBOUND.
+The data structures encapsulating a rebound simulation itself, can be found on a [separate page](c_simulationstructure.md).
 The data structures related to integrators can be found on a [separate page](c_integratorstructures.md).
 
 ## `reb_particle`
