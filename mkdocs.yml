@@ -5,6 +5,11 @@ nav:
     - quickstart.md
     - install.md
     - acknowledgements.md
+  - "Modules":
+    - integrators.md
+    - collisiondetection.md
+    - boundaryconditions.md
+    - gravity.md
   - 'C Documentation':
     - c_installation.md
     - c_compile.md

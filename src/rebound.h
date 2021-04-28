@@ -642,16 +642,15 @@ struct reb_simulation {
         REB_COLLISION_LINETREE = 5, ///< Tree-based collision search O(N log(N)), looks for collisions by assuming a linear path over the last timestep
         } collision;
     enum {
-        REB_INTEGRATOR_IAS15 = 0,    ///< IAS15 integrator, 15th order, non-symplectic (default)
-        REB_INTEGRATOR_WHFAST = 1,   ///< WHFast integrator, symplectic, 2nd order, up to 11th order correctors
-        REB_INTEGRATOR_SEI = 2,      ///< SEI integrator for shearing sheet simulations, symplectic, needs OMEGA variable
-        REB_INTEGRATOR_LEAPFROG = 4, ///< LEAPFROG integrator, simple, 2nd order, symplectic
-        // REB_INTEGRATOR_HERMES = 5,   ///< HERMES Integrator, not available anymore. Use MERCURIUS instead.
-        REB_INTEGRATOR_NONE = 7,     ///< Do not integrate anything
-        REB_INTEGRATOR_JANUS = 8,    ///< Bit-wise reversible JANUS integrator.
-        REB_INTEGRATOR_MERCURIUS = 9,///< MERCURIUS integrator 
-        REB_INTEGRATOR_SABA = 10,    ///< SABA integrator family (Laskar and Robutel 2001)
-        REB_INTEGRATOR_EOS = 11,     ///< Embedded Operator Splitting (EOS) integrator family (Rein 2019)
+        REB_INTEGRATOR_IAS15 = 0,    // IAS15 integrator, 15th order, non-symplectic (default)
+        REB_INTEGRATOR_WHFAST = 1,   // WHFast integrator, symplectic, 2nd order, up to 11th order correctors
+        REB_INTEGRATOR_SEI = 2,      // SEI integrator for shearing sheet simulations, symplectic, needs OMEGA variable
+        REB_INTEGRATOR_LEAPFROG = 4, // LEAPFROG integrator, simple, 2nd order, symplectic
+        REB_INTEGRATOR_NONE = 7,     // Do not integrate anything
+        REB_INTEGRATOR_JANUS = 8,    // Bit-wise reversible JANUS integrator.
+        REB_INTEGRATOR_MERCURIUS = 9,// MERCURIUS integrator 
+        REB_INTEGRATOR_SABA = 10,    // SABA integrator family (Laskar and Robutel 2001)
+        REB_INTEGRATOR_EOS = 11,     // Embedded Operator Splitting (EOS) integrator family (Rein 2019)
         } integrator;
     enum {
         REB_BOUNDARY_NONE = 0,      ///< Do not check for anything (default)
