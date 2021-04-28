@@ -1011,51 +1011,6 @@ struct reb_particle reb_get_jacobi_com(struct reb_particle* p);
 /** @} */
 
 /**
- * @defgroup OutputRebFunctions Output functions
- * List of the built-in output functions for REBOUND
- * @{
- */
-/**
- * @brief This function checks if a new output is required at this time.
- * @details This is typically used within the heartbeat function to generate
- * equally spaced outputs.
- * @param interval Output interval.
- * @param r The rebound simulation to be considered
- * @return The return value is 1 if an output is required and 0 otherwise.
- */
-int reb_output_check(struct reb_simulation* r, double interval);
-
-/**
- * @brief Output status information on the screen.
- * @details Outputs the current number of particles, the time and the time difference since the last output to the screen.
- * @param r The rebound simulation to be considered
- * @param tmax The maximum integration time (used to calculate the progress in percent)
- */
-void reb_output_timing(struct reb_simulation* r, const double tmax);
-
-/**
- * @brief Append an ASCII file with orbital paramters of all particles.
- * @details The orbital parameters are calculated in Jacobi coordinates.
- * Particles are assumed to be sorted from the inside out, the central object having index 0. 
- * Each time the function is called N-1 rows are appended to the file with name filename.
- * Each row in the file corresponds to one particle and contains the following columns (tab separated):
- * time, semi-major axis, eccentricity, inclination, Omega (longitude ascending node), 
- * omega (argument of pericenter), lambda (mean longitude), period, f (true anomaly). 
- * @param r The rebound simulation to be considered
- * @param filename Output filename.
- */
-void reb_output_orbits(struct reb_simulation* r, char* filename);
-
-/**
- * @brief Save the reb_simualtion structure as a binary
- * @details This function can be used to save the current status of a REBOUND simualtion 
- * and later restart the simualtion.
- * @param r The rebound simulation to be considered
- * @param filename Output filename.
- */
-void reb_output_binary(struct reb_simulation* r, const char* filename);
-
-/**
  * @brief This function compares two REBOUND simulations and records the difference in a buffer.
  * @details This is used for taking a SimulationArchive Snapshot.
  * @param buf1 The buffer corresponding to the first rebound simulation to be compared
@@ -1071,33 +1026,14 @@ void reb_binary_diff(char* buf1, size_t size1, char* buf2, size_t size2, char** 
  */
 int reb_binary_diff_with_options(char* buf1, size_t size1, char* buf2, size_t size2, char** bufp, size_t* sizep, int output_option);
 
-/**
- * @brief Append the positions and velocities of all particles to an ASCII file.
- * @param r The rebound simulation to be considered
- * @param filename Output filename.
- */
+// Output functions
+int reb_output_check(struct reb_simulation* r, double interval);
+void reb_output_timing(struct reb_simulation* r, const double tmax);
+void reb_output_orbits(struct reb_simulation* r, char* filename);
+void reb_output_binary(struct reb_simulation* r, const char* filename);
 void reb_output_ascii(struct reb_simulation* r, char* filename);
-
-/**
- * @brief Write the positions of all particles to a binary file.
- * @param r The rebound simulation to be considered
- * @param filename Output filename.
- */
 void reb_output_binary_positions(struct reb_simulation* r, const char* filename);
-
-/**
- * @brief Append the velocity dispersion of the particles to an ASCII file.
- * @param r The rebound simulation to be considered
- * @param filename Output filename.
- */
 void reb_output_velocity_dispersion(struct reb_simulation* r, char* filename);
-/** @} */
-
-/**
- * @defgroup SetupRebFunctions Setup functions
- * List of the built-in setup helper functions
- * @{
- */
 
 /**
  * @brief Returns f modulo 2 pi. Return value is in the range [0, 2pi)
