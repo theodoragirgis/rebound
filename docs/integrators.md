@@ -61,9 +61,100 @@ All other members of this structure are only for internal IAS15 use.
 
 
 ## WHFast
-`REB_INTEGRATOR_WHFAST`
+WHFast is an implementation of the symplectic [Wisdom-Holman](https://ui.adsabs.harvard.edu/abs/1991AJ....102.1528W/abstract) integrator. 
+It is the best choice for systems in which there is a dominant central object and perturbations to the Keplerian orbits are small. 
+It supports first and second symplectic correctors as well as the kernel method of [Wisdom et al. 1996](https://ui.adsabs.harvard.edu/abs/1996FIC....10..217W/abstract) with various different kernels.
+The basic implementation of WHFast is described in detail in [Rein & Tamayo 2015](https://ui.adsabs.harvard.edu/abs/2015MNRAS.452..376R/abstract). 
+The higher order aspects of it are described in [Rein, Tamayo & Brown 2019](https://ui.adsabs.harvard.edu/abs/2019MNRAS.489.4632R/abstract). 
+WHFast also supports first order variational equations which can be used in chaos estimators ([Rein & Tamayo 2016](https://ui.adsabs.harvard.edu/abs/2016MNRAS.459.2275R/abstract)). 
+The user can choose between Jacobi and Democratic Heliocentric coordinates. 
 
-WHFast is the integrator described in Rein & Tamayo 2015 and Rein, Tamayo & Brown 2019. It is an implementation of the symplectic Wisdom-Holman integrator. It supports first and second symplectic correctors as well as the kernel method of Wisdom et al. 1996 with various different kernels. It is very fast and accurate, uses Gauss f and g functions to solve the Kepler motion and can integrate variational equations. The user can choose between Jacobi and Democratic Heliocentric coordinates. 
+The following code enables the WHFast integrator. 
+Because WHFast is not an adaptive integrator, you also need to set a timestep.
+Typically this should be a small fraction (a few percent) of the smallest dynamical timescale in the problem.
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    r->integrator = REB_INTEGRATOR_WHFAST;
+    r->dt = 0.1; 
+    ```
+
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    sim.integrator = "whfast"
+    sim.dt = 0.1
+    ```
+
+
+The setting for WHFast are stored in the `reb_simulation_integrator_whfast` structure, which itself is part of the simulation structure. 
+
+`unsigned int corrector`
+:   This variable turns on/off different first symplectic correctors for WHFast. 
+    By default it is set to zero and symplectic correctors are turned off. 
+
+    First symplectic correctors remove error terms up to $O(\epsilon \cdot dt^p)$, where $p$ is the order of the symplectic corrector, and $\epsilon$ is the mass ratio in the system.
+    The following first correctors are implemented in REBOUND:
+
+    Order   | Number of stages 
+    ------- | ----------------
+    0       | Correctors turned off (default)
+    3       | 2
+    5       | 4 
+    7       | 6
+    11      | 10  
+    17      | 16
+
+    For most cases you want to choose the 17th order corrector. 
+    You only want to consider lower order correctors if frequent outputs are required and speed is an issue.
+    Symplectic correctors are turned on as follows.
+
+    
+    === "C"
+        ```c
+        r->ri_whfast.corrector = 17;
+        r->ri_whfast.safe_mode = 0;
+        ```
+
+    === "Python"
+        ```python
+        sim.ri_ias.corrector = 17
+        sim.ri_ias.safe_mode = 0
+        ```
+    
+    Note that the above code also turns off the safe mode. 
+    You most likely want to do that too (see below for a description of the safe mode).
+
+`unsigned int corrector2`
+:   This variable turns on/off second symplectic correctors for WHFast. 
+    By default second symplectic correctors are off (0). 
+    Set to 1 to use second symplectic correctors.
+
+    !!! Info
+        The nomenclature can be a bit confusing. 
+        First symplectic correctors are different from second symplectic correctors.
+        And in REBOUND first symplectic correctors have different orders (see above). 
+        Second symplectic correctors on the other hand can only be turned on or off. 
+        See [Rein, Tamayo & Brown 2019](https://ui.adsabs.harvard.edu/abs/2019MNRAS.489.4632R/abstract) for more on high order symplectic integrators.
+
+`unsigned int kernel`
+:   This variable determines the kernel of the WHFast integrator. By default it uses the standard WH kick step. See below for other options.
+
+`unsigned int coordinates`
+:   Chooses the coordinate system for the WHFast algorithm. Default is Jacobi Coordinates. See below for other options.
+
+`unsigned int recalculate_coordinates_this_timestep`
+:   Setting this flag to one will recalculate Jacobi/heliocentric coordinates from the particle structure in the next timestep. After the timestep, the flag gets set back to 0. If you want to change particles after every timestep, you also need to set this flag to 1 before every timestep. Default is 0.
+
+`unsigned int safe_mode`
+:   If this flag is set (the default), whfast will recalculate the internal coordinates (Jacobi/heliocentric/WHDS) and synchronize every timestep, to avoid problems with outputs or particle modifications between timesteps. Setting it to 0 will result in a speedup, but care must be taken to synchronize and recalculate the internal coordinates when needed. See the AdvWHFast.ipynb tutorial.
+
+`unsigned int keep_unsynchronized`
+:   This flag determines if the inertial coordinates generated are discarded in subsequent timesteps (cached Jacobi/heliocentric/WHDS coordinates are used instead). The default is 0. Set this flag to 1 if you require outputs and bit-wise reproducibility
+
+All other members of this structure are only for internal use and should not be changed manually.
+
+
 
 ## SABA
 `REB_INTEGRATOR_SABA`

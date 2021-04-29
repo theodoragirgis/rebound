@@ -81,35 +81,6 @@ Numerical value     |  Constant name      | Description
 0x9                 | `REB_SABA_H_10_6_4` | SABAH(10,6,4), 9 stages
 
 
-## `reb_simulation_integrator_whfast`
-
-The `reb_simulation_integrator_whfast` structure contains the configuration and data structures used by the WHFast integrator.
-
-Member                              | Description
------------------------------------ | --------------
-`unsigned int corrector`            | This variable turns on/off different first symplectic correctors for WHFast. By default first symplectic correctors are off (0). See below for possible values.
-`unsigned int corrector2`           | This variable turns on/off second symplectic correctors for WHFast. By default second symplectic correctors are off (0). ee below for possible values. Set to 1 to use second symplectic correctors.
-`unsigned int kernel`               | This variable determines the kernel of the WHFast integrator. By default it uses the standard WH kick step. See below for other options.
-`unsigned int coordinates`          | Chooses the coordinate system for the WHFast algorithm. Default is Jacobi Coordinates. See below for other options.
-`unsigned int recalculate_coordinates_this_timestep` | Setting this flag to one will recalculate Jacobi/heliocentric coordinates from the particle structure in the next timestep. After the timestep, the flag gets set back to 0. If you want to change particles after every timestep, you also need to set this flag to 1 before every timestep. Default is 0.
-`unsigned int safe_mode`            | If this flag is set (the default), whfast will recalculate the internal coordinates (Jacobi/heliocentric/WHDS) and synchronize every timestep, to avoid problems with outputs or particle modifications between timesteps. Setting it to 0 will result in a speedup, but care must be taken to synchronize and recalculate the internal coordinates when needed. See the AdvWHFast.ipynb tutorial.
-`unsigned int keep_unsynchronized`  | This flag determines if the inertial coordinates generated are discarded in subsequent timesteps (cached Jacobi/heliocentric/WHDS coordinates are used instead). The default is 0. Set this flag to 1 if you require outputs and bit-wise reproducibility
-
-All other members of this structure are only for internal use and should not be changed manually.
-
-
-### Symplectic correctors
-First symplectic correctors (or just *symplectic correctors*) remove error terms up to $O(\epsilon \cdot dt^p)$, where $p$ is the order of the symplectic corrector, and $\epsilon$ is the mass ratio in the system.
-First order correctors implemented in REBOUND are:
-
-Order   | Description
-------- | ----------------
-0       | This turns of all first correctors (default)
-3       | Third order (two-stage) first corrector 
-5       | Fifth order (four-stage) first corrector 
-7       | Seventh order (six-stage) first corrector 
-11      | Eleventh order (ten-stage) first corrector 
-17      | 17th order (16-stage) first corrector 
 
 
 ### Kernels
