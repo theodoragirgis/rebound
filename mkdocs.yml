@@ -30,6 +30,7 @@ theme:
     - navigation.tabs
 markdown_extensions:
   - admonition
+  - def_list
   - pymdownx.tabbed
   - pymdownx.highlight
   - pymdownx.superfences

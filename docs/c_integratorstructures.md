@@ -19,19 +19,6 @@ r->ri_ias15->expsilon = 0; // Make IAS15 non-adaptive
 
 
 
-## `reb_simulation_integrator_ias15`
-
-The `reb_simulation_integrator_ias15` structure contains the configuration and data structures used by the high order IAS15 integrator.
-
-
-Member                      | Description
---------------------------- | --------------
-`double epsilon`            | This parameter controls the accuracy of the integrator. The default value is $10^{-9}$. Changing this parameter will change the timestep. However, note that changing the timestep rarely makes sense because IAS15 is a very high (15th) order integrator. Increasing the timestep by only a factor of 10 will increase the error by a factor of $10^{15}$. In other words, a simulation that previously was converged to machine precision will now have an error of order unity. **Important:** Setting this parameter to 0 turns off adaptive timestepping and a constant timestep will is used. 
-`doule min_dt`              | This sets the minimum allowed timestep. The default value is 0. Set this to a finite value if the adaptive timestep becomes excessively small, for example during close encounters or because of finite floating point precision . Use with caution and make sure the simulation results make physically sense.
-`unsigned int epsilon_global` | This flag determines how the relative acceleration error is estimated. If set to 1, IAS15 estimates the fractional error via `max(acceleration_error)/max(acceleration)` where the maximum is taken over all particles. If set to 0, the fractional error is estimates via `max(acceleration_error/acceleration)`.
-
-All other members of this structure are only for internal IAS15 use and should not be changed manually.
-
 ## `reb_simulation_integrator_mercurius`
 
 The `reb_simulation_integrator_mercurius` structure contains the configuration and data structures used by the hybrid symplectic MERCURIUS integrator.
