@@ -2,20 +2,47 @@
 
 This page describes the `reb_simulation` structure. 
 It contains the configuration and the current state of one REBOUND simulation.
-The following code will allocated a new REBOUND simulation and initialize the all variables:
+
+## Life cycle
+The `reb_create_simulation()` function allocate memory for a `reb_simulation` structure and also initialize all variables to their default value.
+If you want to avoid a memory leak, you need to free the simulation when you no longer need it.
 ```c
 struct reb_simulation* r = reb_create_simulation();
-```
-If you want to release the memory allocated in the above function call, use the corresponding `_free` function:
-```c
+// ... do work ... 
 reb_free_simulation(r);
 ```
-This will free all data associated with the simulation such as particles and the simulation structure itself.
+The call to `reb_free_simulation()` frees all data associated with the simulation such as particles.
+It will also free the memory for the simulation structure itself.
 
-The following table lists the important members of `struct reb_simulation`.
-To keep this documentation concise, the members which are only intended for internal use are not documented here. 
+## Binary files
+You can use binary files to save simulations to a file and then later restore them from this file.
+All the particle data and the current simulation states are saved. 
+Below is an example on how to work with binary files.
+
+```c
+struct reb_simulation* r = reb_create_simulation();
+// ... setup simulation ...
+reb_integate(r, 10); // integrate 
+reb_output_binary(r, "snapshot.bin");
+reb_free_simulation(r); 
+
+struct reb_simulation* r2 = reb_create_simulation_from_binary("snapshot.bin);
+reb_integate(r2, 20); // continue integration
+reb_free_simulation(r2); 
+```
+
+A SimulationArchive is a collection of binary snapshots stored in the same file. 
+You can load a specific snapshots with the function 
+
+```c
+struct reb_simulation* reb_create_simulation_from_simulationarchive(struct reb_simulationarchive* sa, long snapshot);
+```
+
+
 
 ## General members
+The following table lists the important members of `struct reb_simulation`.
+To keep this documentation concise, the members which are only intended for internal use are not documented here. 
 
 
 Member                      | Description

@@ -488,37 +488,6 @@ struct reb_hash_pointer_pair{
  */
 /** @} */
 
-/**
- * @defgroup MainRebStructs Main REBOUND structures
- * @{
-*/
-
-
-/**
- * @brief Structure representing a Keplerian orbit.
- * @details This structure is returned when calculating 
- * a Keplerian orbit from Cartesian coordinates. 
- */
-struct reb_orbit {
-    double d;        ///< Radial distance from central object
-    double v;        ///< velocity relative to central object's velocity
-    double h;        ///< Angular momentum
-    double P;        ///< Orbital period
-    double n;        ///< Mean motion
-    double a;        ///< Semi-major axis
-    double e;        ///< Eccentricity
-    double inc;      ///< Inclination
-    double Omega;    ///< Longitude of ascending node
-    double omega;    ///< Argument of pericenter
-    double pomega;   ///< Longitude of pericenter
-    double f;        ///< True anomaly
-    double M;        ///< Mean anomaly
-    double l;        ///< Mean Longitude
-    double theta;    ///< True Longitude
-    double T;        ///< Time of pericenter passage
-    double rhill;    ///< Circular Hill radius 
-};
-
 // Main REBOUND Simulation structure
 struct reb_simulation {
     double  t;
@@ -629,17 +598,16 @@ struct reb_simulation {
 
     // Modules
     enum {
-        REB_VISUALIZATION_NONE = 0,     ///< No visualization (default if OPENGL compiler flag is turned off)
-        REB_VISUALIZATION_OPENGL = 1,   ///< OpenGL visualization (default if OPENGL compiler flag is turned on)
-        REB_VISUALIZATION_WEBGL = 2,    ///< WebGL visualization, only usable from Jupyter notebook widget
+        REB_VISUALIZATION_NONE = 0,     // No visualization (default if OPENGL compiler flag is turned off)
+        REB_VISUALIZATION_OPENGL = 1,   // OpenGL visualization (default if OPENGL compiler flag is turned on)
+        REB_VISUALIZATION_WEBGL = 2,    // WebGL visualization, only usable from Jupyter notebook widget
         } visualization;
     enum {
-        REB_COLLISION_NONE = 0,     ///< Do not search for collisions (default)
-        REB_COLLISION_DIRECT = 1,   ///< Direct collision search O(N^2)
-        REB_COLLISION_TREE = 2,     ///< Tree based collision search O(N log(N))
-        REB_COLLISION_MERCURIUS = 3,///< OBSOLETE, use REB_COLLISION_DIRECT instead
-        REB_COLLISION_LINE = 4,     ///< Direct collision search O(N^2), looks for collisions by assuming a linear path over the last timestep
-        REB_COLLISION_LINETREE = 5, ///< Tree-based collision search O(N log(N)), looks for collisions by assuming a linear path over the last timestep
+        REB_COLLISION_NONE = 0,     // Do not search for collisions (default)
+        REB_COLLISION_DIRECT = 1,   // Direct collision search O(N^2)
+        REB_COLLISION_TREE = 2,     // Tree based collision search O(N log(N))
+        REB_COLLISION_LINE = 4,     // Direct collision search O(N^2), looks for collisions by assuming a linear path over the last timestep
+        REB_COLLISION_LINETREE = 5, // Tree-based collision search O(N log(N)), looks for collisions by assuming a linear path over the last timestep
         } collision;
     enum {
         REB_INTEGRATOR_IAS15 = 0,    // IAS15 integrator, 15th order, non-symplectic (default)
@@ -653,28 +621,28 @@ struct reb_simulation {
         REB_INTEGRATOR_EOS = 11,     // Embedded Operator Splitting (EOS) integrator family (Rein 2019)
         } integrator;
     enum {
-        REB_BOUNDARY_NONE = 0,      ///< Do not check for anything (default)
-        REB_BOUNDARY_OPEN = 1,      ///< Open boundary conditions. Removes particles if they leave the box 
-        REB_BOUNDARY_PERIODIC = 2,  ///< Periodic boundary conditions
-        REB_BOUNDARY_SHEAR = 3,     ///< Shear periodic boundary conditions, needs OMEGA variable
+        REB_BOUNDARY_NONE = 0,      // Do not check for anything (default)
+        REB_BOUNDARY_OPEN = 1,      // Open boundary conditions. Removes particles if they leave the box 
+        REB_BOUNDARY_PERIODIC = 2,  // Periodic boundary conditions
+        REB_BOUNDARY_SHEAR = 3,     // Shear periodic boundary conditions, needs OMEGA variable
         } boundary;
     enum {
-        REB_GRAVITY_NONE = 0,       ///< Do not calculate graviational forces
-        REB_GRAVITY_BASIC = 1,      ///< Basic O(N^2) direct summation algorithm, choose this for shearing sheet and periodic boundary conditions
-        REB_GRAVITY_COMPENSATED = 2,    ///< Direct summation algorithm O(N^2) but with compensated summation, slightly slower than BASIC but more accurate
-        REB_GRAVITY_TREE = 3,       ///< Use the tree to calculate gravity, O(N log(N)), set opening_angle2 to adjust accuracy.
-        REB_GRAVITY_MERCURIUS = 4,  ///< Special gravity routine only for MERCURIUS
-        REB_GRAVITY_JACOBI = 5,     ///< Special gravity routine which includes the Jacobi terms for WH integrators 
+        REB_GRAVITY_NONE = 0,       // Do not calculate graviational forces
+        REB_GRAVITY_BASIC = 1,      // Basic O(N^2) direct summation algorithm, choose this for shearing sheet and periodic boundary conditions
+        REB_GRAVITY_COMPENSATED = 2,// Direct summation algorithm O(N^2) but with compensated summation, slightly slower than BASIC but more accurate
+        REB_GRAVITY_TREE = 3,       // Use the tree to calculate gravity, O(N log(N)), set opening_angle2 to adjust accuracy.
+        REB_GRAVITY_MERCURIUS = 4,  // Special gravity routine only for MERCURIUS
+        REB_GRAVITY_JACOBI = 5,     // Special gravity routine which includes the Jacobi terms for WH integrators 
         } gravity;
 
     // Integrators
-    struct reb_simulation_integrator_sei ri_sei;        ///< The SEI struct 
-    struct reb_simulation_integrator_whfast ri_whfast;  ///< The WHFast struct 
-    struct reb_simulation_integrator_saba ri_saba;      ///< The SABA struct 
-    struct reb_simulation_integrator_ias15 ri_ias15;    ///< The IAS15 struct
-    struct reb_simulation_integrator_mercurius ri_mercurius;      ///< The MERCURIUS struct
-    struct reb_simulation_integrator_janus ri_janus;    ///< The JANUS struct 
-    struct reb_simulation_integrator_eos ri_eos;        ///< The EOS struct 
+    struct reb_simulation_integrator_sei ri_sei;            // The SEI struct 
+    struct reb_simulation_integrator_whfast ri_whfast;      // The WHFast struct 
+    struct reb_simulation_integrator_saba ri_saba;          // The SABA struct 
+    struct reb_simulation_integrator_ias15 ri_ias15;        // The IAS15 struct
+    struct reb_simulation_integrator_mercurius ri_mercurius;// The MERCURIUS struct
+    struct reb_simulation_integrator_janus ri_janus;        // The JANUS struct 
+    struct reb_simulation_integrator_eos ri_eos;            // The EOS struct 
 
      // Callback functions
     void (*additional_forces) (struct reb_simulation* const r);
@@ -691,17 +659,35 @@ struct reb_simulation {
 
 
 /**
- * @defgroup MainRebFunctions Main functions
- * @details These are the functions that typically need to be called by the user.
- * @{
+ * @brief Structure representing a Keplerian orbit.
+ * @details This structure is returned when calculating 
+ * a Keplerian orbit from Cartesian coordinates. 
  */
-/**
- * @brief Creates and initialises a REBOUND simulation
- * @details Allocate memory for one reb_simulation structure, initialise all variables 
- * and return the pointer to the reb_simulation structure. This function must be called 
- * before any particles are added.
- */
-struct reb_simulation* reb_create_simulation(void);
+struct reb_orbit {
+    double d;        ///< Radial distance from central object
+    double v;        ///< velocity relative to central object's velocity
+    double h;        ///< Angular momentum
+    double P;        ///< Orbital period
+    double n;        ///< Mean motion
+    double a;        ///< Semi-major axis
+    double e;        ///< Eccentricity
+    double inc;      ///< Inclination
+    double Omega;    ///< Longitude of ascending node
+    double omega;    ///< Argument of pericenter
+    double pomega;   ///< Longitude of pericenter
+    double f;        ///< True anomaly
+    double M;        ///< Mean anomaly
+    double l;        ///< Mean Longitude
+    double theta;    ///< True Longitude
+    double T;        ///< Time of pericenter passage
+    double rhill;    ///< Circular Hill radius 
+};
+
+
+// reb_simulation life cycle
+struct reb_simulation* reb_create_simulation(void);     // allocates memory, then calls reb_init_simulation
+void reb_init_simulation(struct reb_simulation* r);    
+void reb_free_simulation(struct reb_simulation* const r);
 
 /**
  * @brief Creates a deep copy of a REBOUND simulation
@@ -720,14 +706,6 @@ struct reb_simulation* reb_copy_simulation(struct reb_simulation* r);
  * @param output_option Is set to 1, then the output is printed on the screen. If set to 2, only the return value indicates if the simulations are different. 
  */
 int reb_diff_simulations(struct reb_simulation* r1, struct reb_simulation* r2, int output_option);
-
-/**
- * @brief Initialize reb_simulation structure.
- *
- * @details Same as reb_create_simulation() but does not allocate memory for structure itself.
- * @param r Structure to be initialized (needs to be allocated externally).
- */
-void reb_init_simulation(struct reb_simulation* r);
 
 /**
  * @brief Perform one integration step
@@ -784,12 +762,6 @@ void reb_integrator_reset(struct reb_simulation* r);
  */
 void reb_configure_box(struct reb_simulation* const r, const double boxsize, const int root_nx, const int root_ny, const int root_nz);
 
-/**
- * @brief Frees up all space used by a REBOUND simulation and the reb_simulation structure itself.
- * @details The REBOUND simulation is not usable anymore after being passed to this function.
- * @param r The rebound simulation to be freed
- */
-void reb_free_simulation(struct reb_simulation* const r);
 
 /**
  * @cond PRIVATE
@@ -804,21 +776,12 @@ void reb_free_pointers(struct reb_simulation* const r);
 /** @endcond */
 
 #ifdef MPI
-/**
- * @brief Init MPI for simulation r
- */
 void reb_mpi_init(struct reb_simulation* const r);
-
-/**
- * @brief Finalize MPI for simulation r
- */
 void reb_mpi_finalize(struct reb_simulation* const r);
 #endif // MPI
 
 #ifdef OPENMP
-/**
- * @brief Wrapper method to set number of OpenMP threads from python.
- */
+// Wrapper method to set number of OpenMP threads from python.
 void reb_omp_set_num_threads(int num_threads);
 #endif // OPENMP
 

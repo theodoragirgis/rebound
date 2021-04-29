@@ -33,6 +33,7 @@ theme:
   features:
     - navigation.tabs
 markdown_extensions:
+  - pymdownx.tabbed
   - pymdownx.highlight
   - pymdownx.superfences
   - pymdownx.arithmatex:
