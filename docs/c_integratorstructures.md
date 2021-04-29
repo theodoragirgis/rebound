@@ -83,25 +83,7 @@ Numerical value     |  Constant name      | Description
 
 
 
-### Kernels
-WHFast supports different kernels. The default kernal is a standard kick step. Kernels implemented in REBOUND are:
-
-Numerical value | Constant name                     | Description
---------------- | --------------------------------- | ----------------
-0               | `REB_WHFAST_KERNEL_DEFAULT`       | A standard WH kick step (default)
-1               | `REB_WHFAST_KERNEL_MODIFIEDKICK`  | Exact modified kick. This works for Newtonian gravity only. Not additional forces. 
-2               | `REB_WHFAST_KERNEL_COMPOSITION`   | Composition kernel
-3               | `REB_WHFAST_KERNEL_LAZY`          | Lazy implementer's modified kick. This is often the best option.
      
-### Coordinate systems
-WHFast supports different coordinate systems:    
-
-Numerical value | Constant name                                     | Description
---------------- | ------------------------------------------------- | ----------------
-0               | `REB_WHFAST_COORDINATES_JACOBI`                   | Jacobi coordinates (default)
-1               | `REB_WHFAST_COORDINATES_DEMOCRATICHELIOCENTRIC`   | Democratic Heliocentric coordinates
-2               | `REB_WHFAST_COORDINATES_WHDS`                     | WHDS coordinates (Hernandez and Dehnen, 2017)
-
 
 
 

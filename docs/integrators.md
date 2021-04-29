@@ -138,21 +138,65 @@ The setting for WHFast are stored in the `reb_simulation_integrator_whfast` stru
         See [Rein, Tamayo & Brown 2019](https://ui.adsabs.harvard.edu/abs/2019MNRAS.489.4632R/abstract) for more on high order symplectic integrators.
 
 `unsigned int kernel`
-:   This variable determines the kernel of the WHFast integrator. By default it uses the standard WH kick step. See below for other options.
+:   This variable determines the kernel of the WHFast integrator. 
+    The following options are currently supported:
+
+    - The standard Wisdom-Holman kick step. This is the default.
+    - Exact modified kick. This works for Newtonian gravity only. Not additional forces. 
+    - The composition kernel.
+    - Lazy implementer's modified kick. This is often the best option.
+        
+    Check [Rein, Tamayo & Brown 2019](https://ui.adsabs.harvard.edu/abs/2019MNRAS.489.4632R/abstract) for details on what these kernel methods are. 
+    The syntax to use them is 
+    
+    === "C"
+        ```c
+        r->ri_whfast.kernel = REB_WHFAST_KERNEL_DEFAULT;      // or
+        r->ri_whfast.kernel = REB_WHFAST_KERNEL_MODIFIEDKICK; // or
+        r->ri_whfast.kernel = REB_WHFAST_KERNEL_COMPOSITION;  // or
+        r->ri_whfast.kernel = REB_WHFAST_KERNEL_LAZY;
+        ```
+
+    === "Python"
+        ```python
+        sim.ri_ias.kernel = "default"      # or
+        sim.ri_ias.kernel = "modifiedkick" # or
+        sim.ri_ias.kernel = "composition"  # or
+        sim.ri_ias.kernel = "lazy"
+        ```
 
 `unsigned int coordinates`
-:   Chooses the coordinate system for the WHFast algorithm. Default is Jacobi Coordinates. See below for other options.
+:   WHFast supports different coordinate systems. 
+    Default are Jacobi Coordinates.
+    Other options are democratic heliocentric coordinates, and the WHDS coordinates ([Hernandez & Dehnen, 2017](https://ui.adsabs.harvard.edu/abs/2017MNRAS.468.2614H/abstract))
+    The syntax to use them is 
+    
+    === "C"
+        ```c
+        r->ri_whfast.coordinates = REB_WHFAST_COORDINATES_JACOBI;                  // or
+        r->ri_whfast.coordinates = REB_WHFAST_COORDINATES_DEMOCRATICHELIOCENTRIC;  // or
+        r->ri_whfast.coordinates = REB_WHFAST_COORDINATES_WHDS; 
+        ```
+
+    === "Python"
+        ```python
+        sim.ri_ias.coordinates = "jacobi"                 # or
+        sim.ri_ias.coordinates = "democraticheliocentric" # or
+        sim.ri_ias.coordinates = "whds"
+        ```
 
 `unsigned int recalculate_coordinates_this_timestep`
-:   Setting this flag to one will recalculate Jacobi/heliocentric coordinates from the particle structure in the next timestep. After the timestep, the flag gets set back to 0. If you want to change particles after every timestep, you also need to set this flag to 1 before every timestep. Default is 0.
+:   Setting this flag to one will recalculate the internal coordinates from the particle structure in the next timestep. 
+    After the timestep, the flag gets set back to 0. If you want to change particles after every timestep, you also need to set this flag to 1 before every timestep. Default is 0.
 
 `unsigned int safe_mode`
-:   If this flag is set (the default), whfast will recalculate the internal coordinates (Jacobi/heliocentric/WHDS) and synchronize every timestep, to avoid problems with outputs or particle modifications between timesteps. Setting it to 0 will result in a speedup, but care must be taken to synchronize and recalculate the internal coordinates when needed. See the AdvWHFast.ipynb tutorial.
+:   If this flag is set (the default), whfast will recalculate the internal coordinates (Jacobi/heliocentric/WHDS) and synchronize every timestep, to avoid problems with outputs or particle modifications between timesteps. 
+    Setting it to 0 will result in a speedup, but care must be taken to synchronize and recalculate the internal coordinates when needed. See also the AdvWHFast.ipynb tutorial.
 
 `unsigned int keep_unsynchronized`
 :   This flag determines if the inertial coordinates generated are discarded in subsequent timesteps (cached Jacobi/heliocentric/WHDS coordinates are used instead). The default is 0. Set this flag to 1 if you require outputs and bit-wise reproducibility
 
-All other members of this structure are only for internal use and should not be changed manually.
+All other members of the `reb_simulation_integrator_whfast` structure are for internal use only.
 
 
 
