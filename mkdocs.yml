@@ -1,30 +1,26 @@
 site_name: REBOUND
 nav:
-  - Home: 
-    - index.md
+  - "Home": index.md
+  - "Getting started":
     - quickstart.md
-    - install.md
-    - acknowledgements.md
+    - c_compile.md
+    - c_simulationstructure.md
+    - c_simpleexample.md
   - "Modules":
+    - modules.md
     - integrators.md
+    - c_integratorstructures.md
+    - c_switchingfunctions.md
     - collisiondetection.md
+    - c_collisionresolvefunctions.md
     - boundaryconditions.md
     - gravity.md
-  - 'C Documentation':
-    - c_installation.md
-    - c_compile.md
-    - c_compile_errors.md
-    - c_simpleexample.md
-    - 'Structures':
-      - c_simulationstructure.md
-      - c_structures.md
-      - c_integratorstructures.md
-    - 'Functions':
-      - c_collisionresolvefunctions.md
-      - c_switchingfunctions.md
-      - c_randomsamplingfunctions.md
-      - c_outputfunctions.md
-  - pythonapi.md
+  - 'Concepts':
+    - 'Orbits':
+      - None
+    - c_structures.md
+    - c_randomsamplingfunctions.md
+    - c_outputfunctions.md
   - Examples: examples.md
 theme:
   name: material
@@ -33,6 +29,7 @@ theme:
   features:
     - navigation.tabs
 markdown_extensions:
+  - admonition
   - pymdownx.tabbed
   - pymdownx.highlight
   - pymdownx.superfences

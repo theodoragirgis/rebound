@@ -19,17 +19,32 @@ You can use binary files to save simulations to a file and then later restore th
 All the particle data and the current simulation states are saved. 
 Below is an example on how to work with binary files.
 
-```c
-struct reb_simulation* r = reb_create_simulation();
-// ... setup simulation ...
-reb_integate(r, 10); // integrate 
-reb_output_binary(r, "snapshot.bin");
-reb_free_simulation(r); 
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    // ... setup simulation ...
+    reb_integate(r, 10); // integrate 
+    reb_output_binary(r, "snapshot.bin");
+    reb_free_simulation(r); 
 
-struct reb_simulation* r2 = reb_create_simulation_from_binary("snapshot.bin);
-reb_integate(r2, 20); // continue integration
-reb_free_simulation(r2); 
-```
+    struct reb_simulation* r2 = reb_create_simulation_from_binary("snapshot.bin);
+    reb_integate(r2, 20); // continue integration
+    reb_free_simulation(r2); 
+    ```
+
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    // ... setup simulation ...
+    sim.integate(10)
+    sim.ave("snapshot.bin")
+    sim = None # Remove reference, allow python to release memory
+
+    sim2 = rebound.Simulation("snapshot.bin")
+    sim2.integrate(2) # continue integration
+    sim2 = None 
+    ```
+
 
 A SimulationArchive is a collection of binary snapshots stored in the same file. 
 You can load a specific snapshots with the function 

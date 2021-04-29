@@ -58,6 +58,17 @@ There are several papers describing the functionality of REBOUND.
 
 9. Rein, Tamayo & Brown 2019 (Monthly Notices of the Royal Astronomical Society, Volume 489, Issue 4, November 2019, Pages 4632-4640) describes the implementation of the high order symplectic intergators SABA, SABAC, SABACL, WHCKL, WHCKM, and WHCKC. <https://ui.adsabs.harvard.edu/abs/>
 
+## Acknowledgments
+
+If you use this code or parts of this code for results presented in a scientific publication, please send us a copy of your paper so that we can keep track of all publications that made use of the code. We would greatly appreciate a citation as well. The simplest way to find the citations relevant to the specific setup of your REBOUND simulation is: 
+
+```python
+sim = rebound.Simulation()
+-your setup-
+sim.cite()
+```
+
+
 ## License
 
 REBOUND is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
