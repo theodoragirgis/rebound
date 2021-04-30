@@ -47,15 +47,38 @@ The syntax is as follows:
     ```c
     struct reb_simulation* r = reb_create_simulation();
     reb_configure_box(r, 10., 1, 2, 3); # confine the simulation to a box of size 10x20x30
-    r->boundary = REB_BOUNDARY_PERIODIC;
+    r->boundary = reb_boundary_periodic;
     ```
 
-=== "Python"
+=== "python"
     ```python
-    sim = rebound.Simulation()
+    sim = rebound.simulation()
     sim.configure_box(10., 1, 2, 3)   # confine the simulation to a box of size 10x20x30
     sim.boundary = "periodic"
     ```
+
+Ghost boxes are supported for both periodic and shear-periodic boundary conditions.
+Ghost boxes can be used to allow particle collisions accross boundaries and include gravitational forces from outside the box boundaries. 
+This is particularly useful when simulating rings and disks. 
+The following code sets up two rings of ghost boxes in the x and y directions.
+
+=== "C"
+    ```c
+    r->nghostx = 2;
+    r->nghosty = 2;
+    r->nghostz = 0;
+    ```
+
+=== "python"
+    ```python
+    sim.configure_ghostboxes(2, 2, 0)
+    ```
+
+See [Rein & Liu](https://ui.adsabs.harvard.edu/abs/2012A%26A...537A.128R/abstract) for details on the ghost box implementation.
+
+You might encounter the `reb_ghostbox` structure in various parts of the code, for example in function related to gravity calculation and collision detection. 
+It contains the relative position and velocity of a ghostbox.
+If there are no ghostboxed used, then all elements of this structure will be zero.
 
 ## Shear
 ![Shearing sheet](img/shear.png)

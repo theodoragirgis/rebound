@@ -1,11 +1,7 @@
-# Output functions
+# C output functions
 
 The functions listed here provide various output functionality. 
 
-```c
-struct reb_simulation* r = reb_create_simulation();
-r->ri_mercurius.L = reb_integrator_mercurius_L_infinite; 
-```
 ## Output check
 
 ```c

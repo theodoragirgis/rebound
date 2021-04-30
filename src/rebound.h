@@ -63,13 +63,13 @@ struct reb_particle {
     double ax;
     double ay;
     double az;
-    double m;
-    double r;
-    double lastcollision;
-    struct reb_treecell* c;
-    uint32_t hash; 
-    void* ap; 
-    struct reb_simulation* sim;
+    double m;                   // mass
+    double r;                   // physical radius
+    double lastcollision;       // Last time the particle had a physical collision.
+    struct reb_treecell* c;     // Pointer to the cell the particle is currently in.
+    uint32_t hash;              // Hash, can be used to identify particle.
+    void* ap;                   // This pointer allows REBOUNDx to add additional properties to the particle.
+    struct reb_simulation* sim; // Pointer to the parent simulation.
 };
 
 // Generic 3d vector, for internal use only.
