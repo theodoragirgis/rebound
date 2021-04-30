@@ -18,7 +18,7 @@ nav:
     - c_structures.md
     - c_randomsamplingfunctions.md
     - c_outputfunctions.md
-  - Examples: examples.md
+  - examples.md
 theme:
   name: material
   logo: img/rebound.png

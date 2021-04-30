@@ -32,7 +32,7 @@ Doing so will allow you (and any other users on your system) to use REBOUND from
 However, doing so requires root access and some knowledge on how Unix systems work.
 By simply replicating and modifying one of the examples, you'll avoid these complications.
 
-# Errors during compilation
+## Errors during compilation
 
 The way we've designed REBOUND should make the compilation process extremly easy.
 You do not need to install any additional libraries (although you might want to, see below), and you do not need root access. 
