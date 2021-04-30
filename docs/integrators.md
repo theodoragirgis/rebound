@@ -199,6 +199,87 @@ The setting for WHFast are stored in the `reb_simulation_integrator_whfast` stru
 All other members of the `reb_simulation_integrator_whfast` structure are for internal use only.
 
 
+## Mercurius
+
+MERCURIUS is a hybrid symplectic integrator very similar to MERCURY ([Chambers 1999](https://ui.adsabs.harvard.edu/abs/1999MNRAS.304..793C/abstract)). 
+It uses WHFast for long term integrations but switches over smoothly to IAS15 for close encounters.  
+The MERCURIUS implementation is described in [Rein et al 2019](https://ui.adsabs.harvard.edu/abs/2019MNRAS.485.5490R/abstract).
+
+    
+The following code enables MERCURIUS and sets the critical radius to 4 Hill radii
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    r->integrator = REB_INTEGRATOR_MERCURIUS;
+    r->ri_mercurius.hillfac = 4.;
+    ```
+
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    sim.integrator = "mercurius"
+    sim.ri_mercurius.hillfac = 4.
+    ```
+
+The `reb_simulation_integrator_mercurius` structure contains the configuration and data structures used by the hybrid symplectic MERCURIUS integrator.
+
+`double (*L) (const struct reb_simulation* const r, double d, double dcrit)`
+:   This is a function pointer to the force switching function. 
+    If NULL (the default), the MERCURY switching function will be used. 
+    The argument `d` is the distance between two particles. 
+    The argument `dcrit` is the maximum critical distances of the two particles. 
+    The return value is a scalar between 0 and 1. 
+    If this function always returns 1, then the integrator effectively becomes the standard Wisdom-Holman integrator.
+
+    The following switching functions are available:
+
+
+    - Mercury switching function 
+
+        This is the same polynomial switching function as used in MERCURY. 
+
+        ```c
+        double reb_integrator_mercurius_L_mercury(const struct reb_simulation* const r, double d, double dcrit);           
+        ```
+
+    - Infinitely differentiable switching function
+
+        This is an infinitely differentiable switching function. 
+
+        ```c
+        double reb_integrator_mercurius_L_infinite(const struct reb_simulation* const r, double d, double dcrit);           
+        ```
+   
+    The switching function can be set using this syntax: 
+
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    r->ri_mercurius.L = reb_integrator_mercurius_L_infinite; 
+    ```
+
+`double hillfac`
+:   The critical switchover radii of particles are calculated automatically based on multiple criteria. One criterion calculates the Hill radius of particles and then multiplies it with the `hillfac` parameter. The parameter is in units of the Hill radius. The default value is 3. 
+
+`unsigned int recalculate_coordinates_this_timestep`
+:   Setting this flag to one will recalculate heliocentric coordinates from the particle structure at the beginning of the next timestep. After a single timestep, the flag gets set back to 0. If one changes a particles manually after a timestep, then one needs to set this flag to 1 before the next timestep.
+
+`unsigned int recalculate_dcrit_this_timestep`
+:   Setting this flag to one will recalculate the critical switchover distances dcrit at the beginning of the next timestep. After one timestep, the flag gets set back to 0. If you want to recalculate dcrit at every timestep, you also need to set this flag to 1 before every timestep.
+
+`unsigned int safe_mode`
+:   If this flag is set to 1 (the default), the integrator will recalculate heliocentric coordinates and synchronize after every timestep to avoid problems with outputs or particle modifications between timesteps. Setting this flag to 0 will result in a speedup, but care must be taken to synchronize and recalculate coordinates manually if needed.
+
+
+The `reb_simulation_integrator_sei` structure contains the configuration and data structures used by the Symplectic Epicycle Integrator (SEI).
+
+Member                      | Description
+--------------------------- | --------------
+`double OMEGA`              | Epicyclic/orbital frequency.
+`double OMEGAZ`             | Epicyclic frequency in vertical direction.
+
+All other members of this structure are only for internal use and should not be changed manually.
+
+
 
 ## SABA
 
@@ -369,90 +450,18 @@ Leap frog, second order, symplectic
 
 Symplectic Epicycle Integrator (SEI), mixed variable symplectic integrator for the shearing sheet, second order, Rein & Tremaine 2011
 
-## Mercurius
+## No integrator
+Sometimes it might make sense to simply not advance any particle positions or velocities. By selecting this integrator, one can still perform integration steps, but particles will not move.
 
-MERCURIUS is a hybrid symplectic integrator very similar to MERCURY ([Chambers 1999](https://ui.adsabs.harvard.edu/abs/1999MNRAS.304..793C/abstract)). 
-It uses WHFast for long term integrations but switches over smoothly to IAS15 for close encounters.  
-The MERCURIUS implementation is described in [Rein et al 2019](https://ui.adsabs.harvard.edu/abs/2019MNRAS.485.5490R/abstract).
-
-    
-The following code enables MERCURIUS and sets the critical radius to 4 Hill radii
+Here is how to do that:
 === "C"
     ```c
     struct reb_simulation* r = reb_create_simulation();
-    r->integrator = REB_INTEGRATOR_MERCURIUS;
-    r->ri_mercurius.hillfac = 4.;
+    r->integrator = REB_INTEGRATOR_NONE;
     ```
 
 === "Python"
     ```python
     sim = rebound.Simulation()
-    sim.integrator = "mercurius"
-    sim.ri_mercurius.hillfac = 4.
+    sim.integrator = "none"
     ```
-
-The `reb_simulation_integrator_mercurius` structure contains the configuration and data structures used by the hybrid symplectic MERCURIUS integrator.
-
-`double (*L) (const struct reb_simulation* const r, double d, double dcrit)`
-:   This is a function pointer to the force switching function. 
-    If NULL (the default), the MERCURY switching function will be used. 
-    The argument `d` is the distance between two particles. 
-    The argument `dcrit` is the maximum critical distances of the two particles. 
-    The return value is a scalar between 0 and 1. 
-    If this function always returns 1, then the integrator effectively becomes the standard Wisdom-Holman integrator.
-
-    The following switching functions are available:
-
-
-    - Mercury switching function 
-
-        This is the same polynomial switching function as used in MERCURY. 
-
-        ```c
-        double reb_integrator_mercurius_L_mercury(const struct reb_simulation* const r, double d, double dcrit);           
-        ```
-
-    - Infinitely differentiable switching function
-
-        This is an infinitely differentiable switching function. 
-
-        ```c
-        double reb_integrator_mercurius_L_infinite(const struct reb_simulation* const r, double d, double dcrit);           
-        ```
-   
-    The switching function can be set using this syntax: 
-
-    ```c
-    struct reb_simulation* r = reb_create_simulation();
-    r->ri_mercurius.L = reb_integrator_mercurius_L_infinite; 
-    ```
-
-`double hillfac`
-:   The critical switchover radii of particles are calculated automatically based on multiple criteria. One criterion calculates the Hill radius of particles and then multiplies it with the `hillfac` parameter. The parameter is in units of the Hill radius. The default value is 3. 
-
-`unsigned int recalculate_coordinates_this_timestep`
-:   Setting this flag to one will recalculate heliocentric coordinates from the particle structure at the beginning of the next timestep. After a single timestep, the flag gets set back to 0. If one changes a particles manually after a timestep, then one needs to set this flag to 1 before the next timestep.
-
-`unsigned int recalculate_dcrit_this_timestep`
-:   Setting this flag to one will recalculate the critical switchover distances dcrit at the beginning of the next timestep. After one timestep, the flag gets set back to 0. If you want to recalculate dcrit at every timestep, you also need to set this flag to 1 before every timestep.
-
-`unsigned int safe_mode`
-:   If this flag is set to 1 (the default), the integrator will recalculate heliocentric coordinates and synchronize after every timestep to avoid problems with outputs or particle modifications between timesteps. Setting this flag to 0 will result in a speedup, but care must be taken to synchronize and recalculate coordinates manually if needed.
-
-
-## `reb_simulation_integrator_sei`
-
-The `reb_simulation_integrator_sei` structure contains the configuration and data structures used by the Symplectic Epicycle Integrator (SEI).
-
-Member                      | Description
---------------------------- | --------------
-`double OMEGA`              | Epicyclic/orbital frequency.
-`double OMEGAZ`             | Epicyclic frequency in vertical direction.
-
-All other members of this structure are only for internal use and should not be changed manually.
-
-
-## NONE
-`REB_INTEGRATOR_NONE`    
-
-Sometimes it might make sense to simply not advance any particle positions or velocities. By selecting this integrator, one can still perform integration steps, but particles will not move.
