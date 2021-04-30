@@ -9,8 +9,7 @@ nav:
   - "Modules":
     - modules.md
     - integrators.md
-    - collisiondetection.md
-    - c_collisionresolvefunctions.md
+    - collisions.md
     - boundaryconditions.md
     - gravity.md
   - 'Concepts':

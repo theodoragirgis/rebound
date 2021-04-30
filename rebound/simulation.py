@@ -952,6 +952,9 @@ class Simulation(Structure):
         elif func == "hardsphere":
             clibrebound.reb_set_collision_resolve.restype = None
             clibrebound.reb_set_collision_resolve(byref(self), clibrebound.reb_collision_resolve_hardsphere)
+        elif func == "halt":
+            clibrebound.reb_set_collision_resolve.restype = None
+            clibrebound.reb_set_collision_resolve(byref(self), clibrebound.reb_collision_resolve_halt)
         else:
             self._colrfp = COLRFF(func)
             self._collision_resolve = self._colrfp
