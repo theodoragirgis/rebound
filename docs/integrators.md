@@ -13,7 +13,7 @@ Each of the built-in integrators of REBOUND is described in this section.
 IAS15 stands for **I**ntegrator with **A**daptive **S**tep-size control, **15**th order. It is a very high order, non-symplectic integrator which can handle arbitrary forces (inluding those who are velocity dependent). 
 It is in most cases accurate down to machine precision (16 significant decimal digits). 
 The IAS15 implementation in REBOUND can integrate variational equations. 
-The algorithm is describe in detail in [Rein & Spiegel 2015](https://ui.adsabs.harvard.edu/abs/2015MNRAS.446.1424R/abstract) and also in the original paper by [Everhart 1985](https://ui.adsabs.harvard.edu/abs/1985ASSL..115..185E/abstract). 
+The algorithm is described in detail in [Rein & Spiegel 2015](https://ui.adsabs.harvard.edu/abs/2015MNRAS.446.1424R/abstract) and also in the original paper by [Everhart 1985](https://ui.adsabs.harvard.edu/abs/1985ASSL..115..185E/abstract). 
 
 
 IAS15 is the default integrator of REBOUND, so if you want to use it, you don't need to do anything. 
@@ -201,19 +201,163 @@ All other members of the `reb_simulation_integrator_whfast` structure are for in
 
 
 ## SABA
-`REB_INTEGRATOR_SABA`
 
-SABA are symplectic integrators developed by Laskar & Robutel 2001 and Blanes et al. 2013. This implementation support SABA1, SABA2, SABA3, and SABA4 as well as the corrected versions SABAC1, SABAC2, SABAC3, and SABAC4. Different correctors can be selected. Also supported are SABA(8,4,4), SABA(8,6,4), SABA(10,6,4). See Rein, Tamayo & Brown 2019 for details. 
+SABA are symplectic integrators developed by [Laskar & Robutel 2001](https://ui.adsabs.harvard.edu/abs/2001CeMDA..80...39L/abstract) and [Blanes et al. 2013](https://ui.adsabs.harvard.edu/abs/2012arXiv1208.0689B/abstract). 
+The implementation in REBOUND supports SABA1, SABA2, SABA3, and SABA4 as well as the corrected versions SABAC1, SABAC2, SABAC3, and SABAC4. 
+Different correctors can be selected. 
+In addition the following methods with various generelized orders are supported: SABA(8,4,4), SABA(8,6,4), SABA(10,6,4). 
+See [Rein, Tamayo & Brown 2019](https://ui.adsabs.harvard.edu/abs/2019MNRAS.489.4632R/abstract) for details on how these methods work.
+
+The `reb_simulation_integrator_saba` structure contains the configuration and data structures used by the SABA integrator family.
+
+`unsigned int type`
+:   This parameter specifies which SABA integrator type is used.
+    The following SABA integrators are supported:
+
+    Numerical value     |  C constant name    | Description 
+    ------------------- | ------------------- | ----------------------------------
+    0x0                 | `REB_SABA_1`        | SABA1 (Wisdom-Holman)
+    0x1                 | `REB_SABA_2`        | SABA2
+    0x2                 | `REB_SABA_3`        | SABA3
+    0x3                 | `REB_SABA_4`        | SABA4
+    0x100               | `REB_SABA_CM_1`     | SABACM1 (Modified kick corrector)
+    0x101               | `REB_SABA_CM_2`     | SABACM2 (Modified kick corrector)
+    0x102               | `REB_SABA_CM_3`     | SABACM3 (Modified kick corrector)
+    0x103               | `REB_SABA_CM_4`     | SABACM4 (Modified kick corrector)
+    0x200               | `REB_SABA_CL_1`     | SABACL1 (lazy corrector)
+    0x201               | `REB_SABA_CL_2`     | SABACL2 (lazy corrector)
+    0x202               | `REB_SABA_CL_3`     | SABACL3 (lazy corrector)
+    0x203               | `REB_SABA_CL_4`     | SABACL4 (lazy corrector)
+    0x4                 | `REB_SABA_10_4`     | SABA(10,4), 7 stages
+    0x5                 | `REB_SABA_8_6_4`    | SABA(8,6,4), 7 stages
+    0x6                 | `REB_SABA_10_6_4`   | SABA(10,6,4), 8 stages, default
+    0x7                 | `REB_SABA_H_8_4_4`  | SABAH(8,4,4), 6 stages
+    0x8                 | `REB_SABA_H_8_6_4`  | SABAH(8,6,4), 8 stages
+    0x9                 | `REB_SABA_H_10_6_4` | SABAH(10,6,4), 9 stages
+
+    SABA(10,6,4) is the default integrator. It has a generalized order of $O(\epsilon dt^{10} + \epsilon^2 dt^6 + \epsilon^3 dt^4)$. 
+
+    Below is an example on how to enable the SABA integrators in REBOUND and set a specific type.
+
+    === "C"
+        ```c
+        struct reb_simulation* r = reb_create_simulation();
+        r->integrator = REB_INTEGRATOR_SABA;
+        r->ri_saba.type = REB_SABA_10_6_4;
+        ```
+
+    === "Python"
+        ```python
+        sim = rebound.Simulation()
+        sim.integrator = "saba"
+        sim.ri_saba.type = "(10,6,4)"
+        ```
+        One can also use the following shorthand: 
+        ```python
+        sim = rebound.Simulation()
+        sim.integrator = "SABA(10,6,4)"
+        ```
+
+`unsigned int safe_mode`
+:   This flag has the same functionality as in WHFast. Default is 1. Setting this to 0 will provide a speedup but care must be taken with synchronizing integration steps and modifying particles.
+
+`unsigned int keep_unsynchronized`
+:   This flag determines if the inertial coordinates generated are discarded in subsequent timesteps (cached Jacobi coordinates are used instead). The default is 0. Set this flag to 1 if you require outputs and bit-wise reproducibility 
+
+
+
 
 ## JANUS
-`REB_INTEGRATOR_JANUS`
+Janus is a bit-wise time-reversible high-order symplectic integrator using a mix of floating point and integer arithmetic.
+It is described in [Rein & Tamayo 2018](https://ui.adsabs.harvard.edu/abs/2018MNRAS.473.3351R/abstract).
 
-Janus is a bit-wise time-reversible high-order symplectic integrator using a mix of floating point and integer arithmetic. This integrator is still in an experimental stage and will be discussed in an upcoming paper. 
+The following code shows how to enable JANUS and set the length and velocity scales.
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    r->integrator = REB_INTEGRATOR_JANUS;
+    r->ri_mercurius.scale_pos = 1e-10;
+    r->ri_mercurius.scale_vel = 1e-10;
+    ```
+
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    sim.integrator = "janus"
+    sim.ri_janus.scale_pos = 1e-10
+    sim.ri_janus.scale_vel = 1e-10
+    ```
+
+
+The `reb_simulation_integrator_janus` structure contains the configuration and data structures used by the bib-wise reversible JANUS integrator.
+
+`double scale_pos`
+:   Scale of the problem. Positions get divided by this number before the conversion to an integer. Default: $10^{-16}$.
+
+`double scale_vel`
+:   Scale of the problem. Velocities get divided by this number before the conversion to an integer. Default: $10^{-16}$. 
+
+`unsigned int order`
+:   The order of the scheme. Default is 6.
+
+`unsigned int recalculate_integer_coordinates_this_timestep`
+:   If this flag is set, then JANUS will recalculate the integer coordinates from floating point coordinates at the next timestep.
+
+All other members of this structure are only for internal use and should not be changed manually.
+
 
 ## Embedded Operator Splitting Method (EOS)
-`REB_INTEGRATOR_EOS`          
+This is the Embedded Operator Splitting (EOS) methods described in [Rein 2019](https://ui.adsabs.harvard.edu/abs/2020MNRAS.492.5413R/abstract).
 
-Embedded Operator Splitting (EOS) Methods. See Rein 2019 for details.
+The `reb_simulation_integrator_eos` structure contains the configuration and data structures used by EOS.
+
+`unsigned int phi0`
+:   Outer operator splitting scheme (see below for options)
+
+`unsigned int phi1`
+:   Inner operator splitting scheme (see below for options)
+
+`unsigned int n`
+:   Number of sub-timesteps. Default: 2. 
+
+`unsigned int safe_mode`
+:   If set to 0, always combine drift steps at the beginning and end of `phi0`. If set to 1, `n` needs to be bigger than 1.
+
+
+
+The following operator splitting methods for `phi0` and `phi1` are supported in the EOS integrator.
+
+Numerical value | Constant name         | Description
+--------------- | --------------------- | -------------------------------------------------
+0x00            | `REB_EOS_LF`          | 2nd order, standard leap-frog
+0x01            | `REB_EOS_LF4`         | 4th order, three function evaluations
+0x02            | `REB_EOS_LF6`         | 6th order, nine function evaluations
+0x03            | `REB_EOS_LF8`         | 8th order, seventeen funtion evaluations, see Blanes & Casa (2016), p91
+0x04            | `REB_EOS_LF4_2`       | generalized order (4,2), two force evaluations, McLachlan 1995
+0x05            | `REB_EOS_LF8_6_4`     | generalized order (8,6,4), seven force evaluations
+0x06            | `REB_EOS_PLF7_6_4`    | generalized order (7,6,4), three force evaluations, pre- and post-processors
+0x07            | `REB_EOS_PMLF4`       | 4th order, one modified force evaluation, pre- and post-processors, Blanes et al. (1999)
+0x08            | `REB_EOS_PMLF6`       | 6th order, three modified force evaluations, pre- and post-processors, Blanes et al. (1999)
+
+
+The following code shows how to enable EOS and set the embedded methods.
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    r->integrator = REB_INTEGRATOR_EOS;
+    r->ri_eos.phi0 = REB_EOS_LF4;
+    r->ri_eos.phi1 = REB_EOS_LF4;
+    r->ri_eos.n = 6;
+    ```
+
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    sim.integrator = "eos"
+    sim.ri_eos.phi0 = "LF4"
+    sim.ri_eos.phi1 = "LF4"
+    sim.ri_eos.n = 6
+    ```
 
 ## Leapfrog
 `REB_INTEGRATOR_LEAPFROG`     
@@ -226,9 +370,86 @@ Leap frog, second order, symplectic
 Symplectic Epicycle Integrator (SEI), mixed variable symplectic integrator for the shearing sheet, second order, Rein & Tremaine 2011
 
 ## Mercurius
-`REB_INTEGRATOR_MERCURIUS`    
 
-A hybrid integrator very similar to the one found in MERCURY. It uses WHFast for long term integrations but switches over smoothly to IAS15 for close encounters.  
+MERCURIUS is a hybrid symplectic integrator very similar to MERCURY ([Chambers 1999](https://ui.adsabs.harvard.edu/abs/1999MNRAS.304..793C/abstract)). 
+It uses WHFast for long term integrations but switches over smoothly to IAS15 for close encounters.  
+The MERCURIUS implementation is described in [Rein et al 2019](https://ui.adsabs.harvard.edu/abs/2019MNRAS.485.5490R/abstract).
+
+    
+The following code enables MERCURIUS and sets the critical radius to 4 Hill radii
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    r->integrator = REB_INTEGRATOR_MERCURIUS;
+    r->ri_mercurius.hillfac = 4.;
+    ```
+
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    sim.integrator = "mercurius"
+    sim.ri_mercurius.hillfac = 4.
+    ```
+
+The `reb_simulation_integrator_mercurius` structure contains the configuration and data structures used by the hybrid symplectic MERCURIUS integrator.
+
+`double (*L) (const struct reb_simulation* const r, double d, double dcrit)`
+:   This is a function pointer to the force switching function. 
+    If NULL (the default), the MERCURY switching function will be used. 
+    The argument `d` is the distance between two particles. 
+    The argument `dcrit` is the maximum critical distances of the two particles. 
+    The return value is a scalar between 0 and 1. 
+    If this function always returns 1, then the integrator effectively becomes the standard Wisdom-Holman integrator.
+
+    The following switching functions are available:
+
+
+    - Mercury switching function 
+
+        This is the same polynomial switching function as used in MERCURY. 
+
+        ```c
+        double reb_integrator_mercurius_L_mercury(const struct reb_simulation* const r, double d, double dcrit);           
+        ```
+
+    - Infinitely differentiable switching function
+
+        This is an infinitely differentiable switching function. 
+
+        ```c
+        double reb_integrator_mercurius_L_infinite(const struct reb_simulation* const r, double d, double dcrit);           
+        ```
+   
+    The switching function can be set using this syntax: 
+
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    r->ri_mercurius.L = reb_integrator_mercurius_L_infinite; 
+    ```
+
+`double hillfac`
+:   The critical switchover radii of particles are calculated automatically based on multiple criteria. One criterion calculates the Hill radius of particles and then multiplies it with the `hillfac` parameter. The parameter is in units of the Hill radius. The default value is 3. 
+
+`unsigned int recalculate_coordinates_this_timestep`
+:   Setting this flag to one will recalculate heliocentric coordinates from the particle structure at the beginning of the next timestep. After a single timestep, the flag gets set back to 0. If one changes a particles manually after a timestep, then one needs to set this flag to 1 before the next timestep.
+
+`unsigned int recalculate_dcrit_this_timestep`
+:   Setting this flag to one will recalculate the critical switchover distances dcrit at the beginning of the next timestep. After one timestep, the flag gets set back to 0. If you want to recalculate dcrit at every timestep, you also need to set this flag to 1 before every timestep.
+
+`unsigned int safe_mode`
+:   If this flag is set to 1 (the default), the integrator will recalculate heliocentric coordinates and synchronize after every timestep to avoid problems with outputs or particle modifications between timesteps. Setting this flag to 0 will result in a speedup, but care must be taken to synchronize and recalculate coordinates manually if needed.
+
+
+## `reb_simulation_integrator_sei`
+
+The `reb_simulation_integrator_sei` structure contains the configuration and data structures used by the Symplectic Epicycle Integrator (SEI).
+
+Member                      | Description
+--------------------------- | --------------
+`double OMEGA`              | Epicyclic/orbital frequency.
+`double OMEGAZ`             | Epicyclic frequency in vertical direction.
+
+All other members of this structure are only for internal use and should not be changed manually.
 
 
 ## NONE

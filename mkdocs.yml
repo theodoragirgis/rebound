@@ -9,8 +9,6 @@ nav:
   - "Modules":
     - modules.md
     - integrators.md
-    - c_integratorstructures.md
-    - c_switchingfunctions.md
     - collisiondetection.md
     - c_collisionresolvefunctions.md
     - boundaryconditions.md
