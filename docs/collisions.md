@@ -225,3 +225,15 @@ Here is a short example on how to write a simple custom collision resolve functi
     sim.collision = "direct"
     sim.collision_resolve = collision_print_only
     ```
+The first argument of the collision resolve function is a pointer to the simulation. 
+The second argument is a `reb_collision` structure. 
+It contains information about which particles are involved in the collision and, for periodic or shear-periodic [boundary conditions](boundaryconditions.md), if the collision occured accross a boundary:
+
+`int p1`
+:   Index corresponding to one of the colliding particles
+
+`int p2`
+:   Index corresponding to one of the colliding particles
+
+`struct reb_ghostbox gb`
+:   Shift of particle p1 due to a collision across periodic and shearing sheet boundaries. All entries are zero if a normal collision occurs.

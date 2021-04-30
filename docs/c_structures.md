@@ -26,18 +26,6 @@ Member                      | Description
 `uint32_t hash`             | Hash, can be used to identify particle.
 `void* ap`                  | This pointer allows REBOUNDx to add additional properties to the particle.
 `struct reb_simulation* sim`| Pointer to the parent simulation.
-
-## `reb_collision`
-
-This structure describes a single collision. It is used to save a collision during collision search and passed as an argument to the function resolving the collisions. 
-
-Member                      | Description
---------------------------- | --------------
-`int p1`                    | Index corresponding to one of the colliding particles
-`int p2`                    | Index corresponding to one of the colliding particles
-`struct reb_ghostbox gb`    | Shift of particle p1 due to a collision across periodic and shearing sheet boundaries. All entries are zero if a normal collision occurs.
-`int ri`                    | Index of the rootcell (only used for MPI)
-
 ## `reb_ghostbox`
 
 This structure contains the relative position and velocity of a ghostbox. 
