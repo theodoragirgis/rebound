@@ -1,4 +1,7 @@
 mkdocs-material
 # mkdocs-jupyter
 git+git://github.com/hannorein/mkdocs-jupyter
+nbconvert
+jupytext
+mkdocs
 mkdocs-simple-hooks
