@@ -1,6 +1,7 @@
 site_name: REBOUND
 repo_url: https://github.com/hannorein/rebound
 repo_name: hannorein/rebound
+edit_uri: ""
 nav:
   - "Home": index.md
   - "Getting started":
@@ -23,6 +24,7 @@ nav:
     - "Planetary systems":
       - "Just getting started":
         - c_examples/simplest.md
+        - c_examples/heartbeat.md
         - c_examples/reb_add_fmt.md
         - ipython_examples/Churyumov-Gerasimenko.ipynb
         - ipython_examples/WHFast.ipynb
@@ -95,6 +97,7 @@ nav:
     - "Visualization":
       - ipython_examples/WebGLVisualization.ipynb
       - ipython_examples/OrbitPlot.ipynb
+      - ipython_examples/ScreenshotsAndMoviesWithWebG.ipynb
     - "Removing particles":
       - c_examples/removing_particles_from_simulation.md
       - ipython_examples/EscapingParticles.ipynb
@@ -141,4 +144,3 @@ extra:
       link: https://twitter.com/reboundbot
     - icon: fontawesome/brands/github
       link: https://github.com/hannorein/rebound
-  generator: false

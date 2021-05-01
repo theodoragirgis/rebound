@@ -1,5 +1,5 @@
 /**
- * A simple example showing how to use a heartbeat function.
+ * How to use a heartbeat function
  * 
  * We first create a REBOUND simulation, then we add 
  * two particles and integrate the system for 100 time 
