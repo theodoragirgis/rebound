@@ -43,48 +43,6 @@ It's the one structure you will work with most when using REBOUND.
         print(sim.particles) # segmentation fault
         ```
 
-
-## Binary files
-You can use binary files to save simulations to a file and then later restore them from this file.
-All the particle data and the current simulation states are saved. 
-Below is an example on how to work with binary files.
-
-=== "C"
-    ```c
-    struct reb_simulation* r = reb_create_simulation();
-    // ... setup simulation ...
-    reb_integate(r, 10); // integrate 
-    reb_output_binary(r, "snapshot.bin");
-    reb_free_simulation(r); 
-
-    struct reb_simulation* r2 = reb_create_simulation_from_binary("snapshot.bin);
-    reb_integate(r2, 20); // continue integration
-    reb_free_simulation(r2); 
-    ```
-
-=== "Python"
-    ```python
-    sim = rebound.Simulation()
-    // ... setup simulation ...
-    sim.integate(10)
-    sim.ave("snapshot.bin")
-    sim = None # Remove reference, allow python to release memory
-
-    sim2 = rebound.Simulation("snapshot.bin")
-    sim2.integrate(2) # continue integration
-    sim2 = None 
-    ```
-
-
-A SimulationArchive is a collection of binary snapshots stored in the same file. 
-You can load a specific snapshots with the function 
-
-```c
-struct reb_simulation* reb_create_simulation_from_simulationarchive(struct reb_simulationarchive* sa, long snapshot);
-```
-
-
-
 ## General members
 The following table lists the important members of `struct reb_simulation`.
 To keep this documentation concise, the members which are only intended for internal use are not documented here. 
@@ -123,6 +81,46 @@ Member                      | Description
 `double collisions_plog`    | This variable keeps track of momentum exchange. This can be used to calculate collisional viscosity in ring systems.
 `long collisions_Nlog`      | Number of collisions that have occured. This can be used to calculate statistical quantities of collisional systems.
 `unsigned int rand_seed`    | Seed for random number generators. This will be automatically initialized automatically to a random number based on the current time and the process id. However, it can also be set manually to make the simulation reproducible and always return the same sequence of random numbers.
+
+
+## Binary files and SimulationArchive
+You can use binary files to save simulations to a file and then later restore them from this file.
+All the particle data and the current simulation states are saved. 
+Below is an example on how to work with binary files.
+
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    // ... setup simulation ...
+    reb_integate(r, 10); // integrate 
+    reb_output_binary(r, "snapshot.bin");
+    reb_free_simulation(r); 
+
+    struct reb_simulation* r2 = reb_create_simulation_from_binary("snapshot.bin);
+    reb_integate(r2, 20); // continue integration
+    reb_free_simulation(r2); 
+    ```
+
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    // ... setup simulation ...
+    sim.integate(10)
+    sim.save("snapshot.bin")
+    sim = None # Remove reference, allow python to release memory
+
+    sim2 = rebound.Simulation("snapshot.bin")
+    sim2.integrate(2) # continue integration
+    sim2 = None 
+    ```
+
+Rather than using one file for one snapshot of a simulation, you can also use a SimulationArchive.
+A SimulationArchive is a collection of simulation snapshots stored in one binary file. 
+The concepts behind the SimulationArchive are described in detail in [Rein & Tamayo 2017](https://ui.adsabs.harvard.edu/abs/2017MNRAS.467.2377R/abstract).
+
+Examples of how to work with the SimulationArchive are provided in an [iPython](ipython_examples/SimulationArchive.ipynb) and [C example](c_examples/simulationarchive.md).
+
+
 
 ## Module selection 
 
