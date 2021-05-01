@@ -1,5 +1,5 @@
 /**
- * Solar System with test particles.
+ * Solar System with test particles
  *
  * This example integrates all planets of the Solar
  * System and 10000 test particles. The initial data comes 

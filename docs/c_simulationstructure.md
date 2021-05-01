@@ -108,7 +108,7 @@ Member                      | Description
 
 ## Integrator configuration 
 
-The following `struct reb_simulation` members contain the configuration for the individual integrators. They are described on their own [separate page](c_integratorstructures.md). 
+The following `struct reb_simulation` members contain the configuration for the individual integrators. They are described on their own [separate page](integrators.md). 
 
 Member                                                     | Description
 ---------------------------------------------------------- | --------------

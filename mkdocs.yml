@@ -39,6 +39,7 @@ nav:
         - c_examples/closeencounter.md
         - c_examples/closeencounter_record.md
         - c_examples/closeencounter_hybrid.md
+        - ipython_examples/HybridIntegrationsWithMercurius.ipynb
         - ipython_examples/CloseEncounters.ipynb
         - c_examples/mergers.md
         - ipython_examples/User_Defined_Collision_Resolve.ipynb
@@ -47,6 +48,7 @@ nav:
         - ipython_examples/OrbitalElements.ipynb
       - "Small bodies":
         - c_examples/planetesimal_disk_migration.md
+        - c_examples/solar_system_with_testparticles.md
         - ipython_examples/EccentricComets.ipynb
         - ipython_examples/PrimordialEarth.ipynb
       - "Advanced topics":
@@ -92,12 +94,13 @@ nav:
       - c_examples/shearing_sheet.md
       - c_examples/shearing_sheet_2.md
       - c_examples/shearing_sheet_mpi.md
+      - c_examples/shearing_sheet_diagnostics.md
       - c_examples/overstability.md
       - ipython_examples/SaturnsRings.ipynb
     - "Visualization":
       - ipython_examples/WebGLVisualization.ipynb
       - ipython_examples/OrbitPlot.ipynb
-      - ipython_examples/ScreenshotsAndMoviesWithWebG.ipynb
+      - ipython_examples/ScreenshotsAndMoviesWithWebGL.ipynb
     - "Removing particles":
       - c_examples/removing_particles_from_simulation.md
       - ipython_examples/EscapingParticles.ipynb
