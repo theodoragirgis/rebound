@@ -7,7 +7,7 @@ nav:
   - "Getting started":
     - quickstart.md
     - c_compile.md
-    - c_simulationstructure.md
+    - simulationstructure.md
     - c_simpleexample.md
   - "Modules":
     - modules.md
@@ -117,10 +117,11 @@ nav:
       - ipython_examples/Cheartbeat.ipynb
 
 plugins:
-  - mkdocs-jupyter
+  - search
   - mkdocs-simple-hooks:
       hooks:
         on_pre_build: "docs.c_examples.generate_c_examples:run"
+  - mkdocs-jupyter
 theme:
   name: material
   logo: img/rebound.png
