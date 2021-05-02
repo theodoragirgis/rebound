@@ -859,12 +859,6 @@ static struct reb_particle reb_particle_new_errV(struct reb_simulation* r, int* 
     return particle;
 }
 
-struct reb_particle reb_tools_orbit2d_to_particle(double G, struct reb_particle primary, double m, double a, double e, double omega, double f){
-	double Omega = 0.;
-	double inc = 0.;
-	return reb_tools_orbit_to_particle(G, primary, m, a, e, inc, Omega, omega, f);
-}
-
 #define TINY 1.E-308 		///< Close to smallest representable floating point number, used for orbit calculation
 
 struct reb_particle reb_tools_orbit_to_particle_err(double G, struct reb_particle primary, double m, double a, double e, double inc, double Omega, double omega, double f, int* err){

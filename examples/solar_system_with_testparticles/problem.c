@@ -32,7 +32,7 @@ int main(int argc, char* argv[]){
         double e = reb_random_uniform(r, 0.01,0.2);
         double omega = reb_random_uniform(r, 0.,2.*M_PI);
         double f = reb_random_uniform(r, 0.,2.*M_PI);
-        struct reb_particle p = reb_tools_orbit2d_to_particle(1.,r->particles[0],0.,a,e,omega,f);
+        struct reb_particle p = reb_tools_orbit_to_particle(1.,r->particles[0],0.,a,e,0.,0.,omega,f);
         reb_add(r, p); 
     }
     reb_move_to_com(r);
