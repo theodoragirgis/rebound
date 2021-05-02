@@ -43,44 +43,167 @@ It's the one structure you will work with most when using REBOUND.
         print(sim.particles) # segmentation fault
         ```
 
-## General members
-The following table lists the important members of `struct reb_simulation`.
-To keep this documentation concise, the members which are only intended for internal use are not documented here. 
+## Variables
+The following example shows how to access variables in the simulation structure.  
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    r->G = 1.0;             // Set the gravitational constant
+    printf("%f\n", r->t);   // print current simulation time
+    ```
+
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    sim.G = 1.0    # Set the gravitational constant
+    print(sim.t)   # print current simulation time
+    ```
+
+Below, we list the important variables in the simulation stucture. 
+To keep the documentation concise, variables which are only intended for internal use are not documented here. 
+
+### Time
+
+`double t`                  
+:   Current simulation time. The default value is 0. The value increases if a simulation is integrated forward in time ($dt>0$). See also the [discussion on units](units.md).
+
+`double dt`                 
+:   This is the current timestep. The default is 0.01. 
+    Make sure to set the timestep to a small fraction (a few percent) of the shortest dynamical timescale in the problem.
+    Adaptive integrators such as [IAS15](../integrators/#ias15) will use this value as their initial guess during the first timestep.
+    In subsequent timesteps, adaptive integrators will change this value.
+    See also the [discussion on units](units.md).
+     
+`double dt_last_done`       
+:   REBOUND sets this variable to the last timestep used. Do not set this variable manually.
+
+`unsigned long long steps_done` 
+:   Number of timesteps completed.
+
+`int exact_finish_time`     
+:   If this variable is set to 1 (default), then REBOUND will integrate the simulation exactly up to the requested time. 
+    Unless the requested time is a multiple of the timestep, REBOUND will need to reduce the timestep to achieve this.
+    Set this variable to 0 and REBOUND will not reduce the timestep and will instead overshoot the integration by a fractions of one timestep. 
+
+    === "C"
+        ```c
+        struct reb_simulation* r = reb_create_simulation();
+        r->integrator = REB_INTEGRATOR_LEAPFROG; // uses fixed timestep
+        r->dt = 10;
+        r->exact_finish_time = 0;
+        reb_integrate(r, 15);
+        printf("%f\n", r->t);     // will print 20
+        
+        r->exact_finish_time = 1; // default
+        reb_integrate(r, 25);
+        printf("%f\n", r->t);     // will print 25
+        ```
+
+    === "Python"
+        In python, you do not need to set this flag in the simulation structure. 
+        Instead, you pass it as an argument when calling `integrate()`:
+        ```python
+        sim = rebound.Simulation()
+        sim.integrator = "leapfrog" # uses fixed timestep
+        sim.dt = 10
+        sim.integrate(15, exact_finish_time=0)
+        print(sim.t)                # will print 20
+
+        sim.integrate(25, exact_finish_time=1)
+        print(sim.t)                # will print 25
+        ```
 
 
-Member                      | Description
---------------------------- | --------------
-`double t`                  | Current simulation time. 
-`double G`                  | Gravitational constant. Default: 1. 
-`double softening`          | Gravitational softening parameter. Default: 0. 
-`double dt`                 | Current timestep. 
-`double dt_last_done`       | Last timestep used.
-`unsigned long long steps_done` | Number of timesteps completed.
-`int N`                     | Current number of particles on this node. 
-`int N_var`                 | Total number of variational particles. Default: 0.
-`int N_active`              | Number of massive particles included in force calculation. The default is -1 which means the number of active particles is equal to the number of particles, `N`. Particles with an index larger or equal than `N_active` are considered testparticles.
-`int var_config_N`          | Number of variational particle configurations. Default: 0.
-`int testparticle_type`     | Type of the particles with `index >= N_active`. 0 means particle does not influence any other particle (default), 1 means particles with `index < N_active` feel testparticles (similar to MERCURY's small particles). Testparticles never feel each other.
-`struct reb_particle* particles` | This is the main particle array which contains all particles.  
-`double opening_angle2`     | Square of the cell opening angle $ \theta $. This determines the accuracy of the tree based gravity routine. 
-`enum REB_STATUS status`    | This variable indicates the current status of the simulation. See below for possible values. By setting this to 1, one can force a graceful exit at the end of the next timestep.    
-`int exact_finish_time`     | Set to 1 to finish the integration exactly at the requested time. Set to 0 to finish after a full timestep. This might overshoot the integration by a fraction of `dt`. Default is 1. 
-`unsigned int force_is_velocity_dependent` | Set to 1 if integrator needs to consider velocity dependent forces.  
-`unsigned int gravity_ignore_terms`        | Ignore the gravity form the central object (1 for WHFast, 2 for WHFast with democratic heliocentirc coordinates, 0 otherwise). The integrators will in general set this automatically and nothing needs to be changed by the user.
-`double exit_max_distance`  | The integration will stop if any particle is further away from origin than this value.
-`double exit_min_distance`  | The integration will stop if any two particles come closer together than this value.
-`double usleep`             | Sleep this number of microseconds after each timestep. This can be useful for slowing down the simulation, for example for rendering visualizations.  
-`int track_energy_offset`   | Track energy change during collisions and ejections (default: 0).
-`double energy_offset`      | Energy offset due to collisions and ejections (only calculated if `track_energy_offset=1`).
-`double walltime`           | Walltime in seconds used by REBOUND for this simulation (counting the integration only, not visualization, heartbeat function, etc).
-`int nghostx`               | Number of ghostboxes in x direction. 
-`int nghosty`               | Number of ghostboxes in y direction. 
-`int nghostz`               | Number of ghostboxes in z direction. 
-`int collision_resolve_keep_sorted` | If set to one, then particles are kept sorted, even if `collision_resolve` removes particles during a collision. 
-`double minimum_collision_velocity`  | When collisions are resolved with the hard sphere collision resolve function, then the post impact velocity between the two particles will be at least as large as this value. Default 0. Setting this to a value larger than zero might prevent particles sinking into each other. 
-`double collisions_plog`    | This variable keeps track of momentum exchange. This can be used to calculate collisional viscosity in ring systems.
-`long collisions_Nlog`      | Number of collisions that have occured. This can be used to calculate statistical quantities of collisional systems.
-`unsigned int rand_seed`    | Seed for random number generators. This will be automatically initialized automatically to a random number based on the current time and the process id. However, it can also be set manually to make the simulation reproducible and always return the same sequence of random numbers.
+
+### Gravity
+
+`double G`                  
+:   Gravitational constant. By default this value is 1. 
+    If $G=1$, then an orbit with semi-major axis $a=1$ has a period of $P=2\pi$.
+    See also the [discussion on units](units.md).
+
+`double softening`          
+:   This is the gravitational softening parameter. 
+    The gravitational force of a particle in the $x$ direction is calculated as
+    $F_x = -x \frac{G m_1 m_2}{(x^2 +y^2 +z^2 + b^2)^{3/2}}$, where $b$ is the gravitational softening parameter.
+    This can be used to remove strong force gradients on small scales, e.g. during close encounters.
+    The default is 0 (no softening). 
+
+`double opening_angle2`     
+:   This variable determines the accuracy of the gravity calculation when the tree bases gravity routine is used.
+    It is the square of the cell opening angle $\theta$. 
+    See [Rein & Liu](https://ui.adsabs.harvard.edu/abs/2012A%26A...537A.128R/abstract) for a discussion of the tree code.
+
+### Particles
+
+`int N`                     
+:   Current number of particles on this node. 
+
+`int N_var`                 
+:   Total number of variational particles. Default: 0.
+
+`int N_active`              
+:   Number of massive particles included in force calculation. The default is -1 which means the number of active particles is equal to the number of particles, `N`. Particles with an index larger or equal than `N_active` are considered testparticles.
+
+`int var_config_N`          
+:   Number of variational particle configurations. Default: 0.
+
+`int testparticle_type`     
+:   Type of the particles with `index >= N_active`. 0 means particle does not influence any other particle (default), 1 means particles with `index < N_active` feel testparticles (similar to MERCURY's small particles). Testparticles never feel each other.
+
+`struct reb_particle* particles` 
+:   This is the main particle array which contains all particles.  
+
+`enum REB_STATUS status`    
+:   This variable indicates the current status of the simulation. See below for possible values. By setting this to 1, one can force a graceful exit at the end of the next timestep.    
+
+`unsigned int force_is_velocity_dependent` 
+:   Set to 1 if integrator needs to consider velocity dependent forces.  
+
+`unsigned int gravity_ignore_terms`        
+:   Ignore the gravity form the central object (1 for WHFast, 2 for WHFast with democratic heliocentirc coordinates, 0 otherwise). The integrators will in general set this automatically and nothing needs to be changed by the user.
+
+`double exit_max_distance`  
+:   The integration will stop if any particle is further away from origin than this value.
+
+`double exit_min_distance`  
+:   The integration will stop if any two particles come closer together than this value.
+
+`double usleep`             
+:   Sleep this number of microseconds after each timestep. This can be useful for slowing down the simulation, for example for rendering visualizations.  
+
+`int track_energy_offset`   
+:   Track energy change during collisions and ejections (default: 0).
+
+`double energy_offset`      
+:   Energy offset due to collisions and ejections (only calculated if `track_energy_offset=1`).
+
+`double walltime`           
+:   Walltime in seconds used by REBOUND for this simulation (counting the integration only, not visualization, heartbeat function, etc).
+
+`int nghostx`               
+:   Number of ghostboxes in x direction. 
+
+`int nghosty`               
+:   Number of ghostboxes in y direction. 
+
+`int nghostz`               
+:   Number of ghostboxes in z direction. 
+
+`int collision_resolve_keep_sorted` 
+:   If set to one, then particles are kept sorted, even if `collision_resolve` removes particles during a collision. 
+
+`double minimum_collision_velocity`  
+:   When collisions are resolved with the hard sphere collision resolve function, then the post impact velocity between the two particles will be at least as large as this value. Default 0. Setting this to a value larger than zero might prevent particles sinking into each other. 
+
+`double collisions_plog`    
+:   This variable keeps track of momentum exchange. This can be used to calculate collisional viscosity in ring systems.
+
+`long collisions_Nlog`      
+:   Number of collisions that have occured. This can be used to calculate statistical quantities of collisional systems.
+
+`unsigned int rand_seed`    
+:   Seed for random number generators. This will be automatically initialized automatically to a random number based on the current time and the process id. However, it can also be set manually to make the simulation reproducible and always return the same sequence of random numbers.
 
 
 ## Binary files and SimulationArchive
