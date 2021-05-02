@@ -42,6 +42,45 @@ It's the one structure you will work with most when using REBOUND.
         sim = None           # free simulation
         print(sim.particles) # segmentation fault
         ```
+## Saving simulations to disk
+You can use binary files to save simulations to a file and then later restore them from this file.
+All the particle data and the current simulation states are saved. 
+Below is an example on how to work with binary files.
+
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    // ... setup simulation ...
+    reb_integate(r, 10); // integrate 
+    reb_output_binary(r, "snapshot.bin");
+    reb_free_simulation(r); 
+
+    struct reb_simulation* r2 = reb_create_simulation_from_binary("snapshot.bin);
+    reb_integate(r2, 20); // continue integration
+    reb_free_simulation(r2); 
+    ```
+
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    // ... setup simulation ...
+    sim.integate(10)
+    sim.save("snapshot.bin")
+    sim = None # Remove reference, allow python to release memory
+
+    sim2 = rebound.Simulation("snapshot.bin")
+    sim2.integrate(2) # continue integration
+    sim2 = None 
+    ```
+
+Rather than using one file for one snapshot of a simulation, you can also use a SimulationArchive.
+A SimulationArchive is a collection of simulation snapshots stored in one binary file. 
+The concepts behind the SimulationArchive are described in detail in [Rein & Tamayo 2017](https://ui.adsabs.harvard.edu/abs/2017MNRAS.467.2377R/abstract).
+
+Examples of how to work with the SimulationArchive are provided in an [iPython](ipython_examples/SimulationArchive.ipynb) and [C example](c_examples/simulationarchive.md).
+
+
+
 
 ## Variables
 The following example shows how to access variables in the simulation structure.  
@@ -62,7 +101,7 @@ The following example shows how to access variables in the simulation structure.
 Below, we list the important variables in the simulation stucture. 
 To keep the documentation concise, variables which are only intended for internal use are not documented here. 
 
-### Time
+### Timestepping
 
 `double t`                  
 :   Current simulation time. The default value is 0. The value increases if a simulation is integrated forward in time ($dt>0$). See also the [discussion on units](units.md).
@@ -117,6 +156,38 @@ To keep the documentation concise, variables which are only intended for interna
 :   Walltime in seconds used by REBOUND for this simulation.
     This is counting only the integration itself and not the visualization, heartbeat function, etc.
 
+`void (*heartbeat) (struct reb_simulation* r)`
+:   The `heartbeat` function pointer is called at the beginning of the simulation and at the end of each timestep.
+    You can use this function to keep track of your simulation, terminate it, or output data.
+
+    === "C"
+        ```c
+        void heartbeat(struct reb_simulation* r){
+            printf("%f\n",r->t);
+        }
+        int main(int argc, char* argv[]) {
+            struct reb_simulation* r = reb_create_simulation();
+            r->heartbeat = heartbeat;
+            // ...
+        }
+        ```
+    
+    === "Python"
+        ```python
+        def heartbeat(sim_pointer):
+            sim = sim_pointer.contents
+            print(sim.t)
+        
+        sim = rebound.Simulation()
+        sim.heartbeat = heartbeat
+        # ...
+        ```
+
+`void (*pre_timestep_modifications) (struct reb_simulation* const r)`
+
+`void (*post_timestep_modifications) (struct reb_simulation* const r)`
+:   Similar to the heartbeat function, these function pointers allow you to make changes before and after each timestep.
+    These pointers are also used by REBOUNDx.
 
 ### Gravity
 
@@ -150,6 +221,12 @@ To keep the documentation concise, variables which are only intended for interna
     - 0 include all terms
     - 1 ignore terms not required for WHFast with Jacobi coordinates
     - 2 ignore terms not required for WHFast with democratic heliocentirc coordinates
+
+`void (*additional_forces) (struct reb_simulation* const r)`
+:   This function allows the user to add additional (non-gravitational) forces.
+     
+    !!! Todo
+        Add examples.
 
 ### Particles
 
@@ -233,6 +310,12 @@ To keep the documentation concise, variables which are only intended for interna
 
 ### Collisions
 
+
+`int (*collision_resolve) (struct reb_simulation* const r, struct reb_collision)` 
+:   This is a function pointer which determines how a collision is resolved. By default, it is NULL, assuming hard sphere model.
+    A return value of 0 indicates that both particles remain in the simulation. A return value of 1 (2) indicates that particle 1 (2) should be removed from the simulation. A return value of 3 indicates that both particles should be removed from the simulation. 
+    See [the discussion on collisions](collisions.md#resolving-collisions) for more information on how to use this function pointer. 
+
 `int track_energy_offset`   
 :   Set this variable to 1 to track energy change during collisions and ejections (default: 0).
     This is helpful if you want to keep track of an integrator's accuracy and physical collisions do not conserve energy.
@@ -251,6 +334,11 @@ To keep the documentation concise, variables which are only intended for interna
 
 `long collisions_Nlog`      
 :   This variable keeps track of the number of collisions that have occured. This can be used to calculate statistical quantities of collisional systems.
+
+`double (*coefficient_of_restitution) (const struct reb_simulation* const r, double v)`
+:   This is a callback function which gets called when a hard-sphere collision occurs and the coefficient of restitution is required.
+    By default, this function pointer is NULL and a coefficient of resitution of 1 is assumed.
+    The impact velocity of the collision is given to allow for velocity dependent coefficients of restitution.
 
 ### Miscellaneous 
 
@@ -307,60 +395,6 @@ They are described on their own [separate page](integrators.md).
 
 `struct reb_simulation_integrator_eos ri_eos`
 
-## Binary files and SimulationArchive
-You can use binary files to save simulations to a file and then later restore them from this file.
-All the particle data and the current simulation states are saved. 
-Below is an example on how to work with binary files.
-
-=== "C"
-    ```c
-    struct reb_simulation* r = reb_create_simulation();
-    // ... setup simulation ...
-    reb_integate(r, 10); // integrate 
-    reb_output_binary(r, "snapshot.bin");
-    reb_free_simulation(r); 
-
-    struct reb_simulation* r2 = reb_create_simulation_from_binary("snapshot.bin);
-    reb_integate(r2, 20); // continue integration
-    reb_free_simulation(r2); 
-    ```
-
-=== "Python"
-    ```python
-    sim = rebound.Simulation()
-    // ... setup simulation ...
-    sim.integate(10)
-    sim.save("snapshot.bin")
-    sim = None # Remove reference, allow python to release memory
-
-    sim2 = rebound.Simulation("snapshot.bin")
-    sim2.integrate(2) # continue integration
-    sim2 = None 
-    ```
-
-Rather than using one file for one snapshot of a simulation, you can also use a SimulationArchive.
-A SimulationArchive is a collection of simulation snapshots stored in one binary file. 
-The concepts behind the SimulationArchive are described in detail in [Rein & Tamayo 2017](https://ui.adsabs.harvard.edu/abs/2017MNRAS.467.2377R/abstract).
-
-Examples of how to work with the SimulationArchive are provided in an [iPython](ipython_examples/SimulationArchive.ipynb) and [C example](c_examples/simulationarchive.md).
 
 
-
-
-
-## Callback functions
-
-The following members are all function pointers to various callback functions. 
-
-Member                                                     | Description
----------------------------------------------------------- | --------------
-`void (*heartbeat) (struct reb_simulation* r)`             | This function is called at the beginning of the simulation and at the end of each timestep.
-`void (*additional_forces) (struct reb_simulation* const r)` | This function allows the user to add additional (non-gravitational) forces.
- */
-`void (*pre_timestep_modifications) (struct reb_simulation* const r)` | This function allows the user to make changes before each timestep.
- */
-`void (*post_timestep_modifications) (struct reb_simulation* const r)` | This function allows the user to make changes after each timestep.
-`double (*coefficient_of_restitution) (const struct reb_simulation* const r, double v)` | Return the coefficient of restitution. By default, it is NULL, assuming a coefficient of 1. The velocity of the collision is given to allow for velocity dependent coefficients of restitution.
-`int (*collision_resolve) (struct reb_simulation* const r, struct reb_collision)` | Resolve collision within this function. By default, it is NULL, assuming hard sphere model. A return value of 0 indicates that both particles remain in the simulation. A return value of 1 (2) indicates that particle 1 (2) should be removed from the simulation. A return value of 3 indicates that both particles should be removed from the simulation. 
-`void (*free_particle_ap) (struct reb_particle* p)` | Free particle's ap pointer.  Called in reb_remove function.
 
