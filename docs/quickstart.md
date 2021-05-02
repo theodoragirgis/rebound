@@ -70,7 +70,7 @@ sim.integrate(100.)
 
 Finally, let us output the cartesian coordinates and the orbital parameters at the end of the simulation:
 
-```
+```python
 for p in sim.particles:
     print(p.x, p.y, p.z)
 for o in sim.calculate_orbits(): 
@@ -82,7 +82,7 @@ As a next step, have a look at the examples and tutorials in the `python_example
 ## A simple C example
 
 A very short example is provided in the `examples/simplest/` directory. 
-Do to this directory with 
+Go to this directory with 
 
 ```bash
 cd examples/simplest/
