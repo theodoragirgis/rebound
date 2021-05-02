@@ -103,23 +103,23 @@ To keep the documentation concise, variables which are only intended for interna
 
 ### Timestepping
 
-`double t`                  
+`#!c double t`                  
 :   Current simulation time. The default value is 0. The value increases if a simulation is integrated forward in time ($dt>0$). See also the [discussion on units](units.md).
 
-`double dt`                 
+`#!c double dt`                 
 :   This is the current timestep. The default is 0.01. 
     Make sure to set the timestep to a small fraction (a few percent) of the shortest dynamical timescale in the problem.
     Adaptive integrators such as [IAS15](../integrators/#ias15) will use this value as their initial guess during the first timestep.
     In subsequent timesteps, adaptive integrators will change this value.
     See also the [discussion on units](units.md).
      
-`double dt_last_done`       
+`#!c double dt_last_done`       
 :   REBOUND sets this variable to the last timestep used. Do not set this variable manually.
 
-`unsigned long long steps_done` 
+`#!c unsigned long long steps_done` 
 :   Number of timesteps completed.
 
-`int exact_finish_time`     
+`#!c int exact_finish_time`     
 :   If this variable is set to 1 (default), then REBOUND will integrate the simulation exactly up to the requested time. 
     Unless the requested time is a multiple of the timestep, REBOUND will need to reduce the timestep to achieve this.
     Set this variable to 0 and REBOUND will not reduce the timestep and will instead overshoot the integration by a fractions of one timestep. 
@@ -152,11 +152,11 @@ To keep the documentation concise, variables which are only intended for interna
         print(sim.t)                # will print 25
         ```
 
-`double walltime`           
+`#!c double walltime`           
 :   Walltime in seconds used by REBOUND for this simulation.
     This is counting only the integration itself and not the visualization, heartbeat function, etc.
 
-`void (*heartbeat) (struct reb_simulation* r)`
+`#!c void (*heartbeat) (struct reb_simulation* r)`
 :   The `heartbeat` function pointer is called at the beginning of the simulation and at the end of each timestep.
     You can use this function to keep track of your simulation, terminate it, or output data.
 
@@ -183,37 +183,37 @@ To keep the documentation concise, variables which are only intended for interna
         # ...
         ```
 
-`void (*pre_timestep_modifications) (struct reb_simulation* const r)`
+`#!c void (*pre_timestep_modifications) (struct reb_simulation* const r)`
 
-`void (*post_timestep_modifications) (struct reb_simulation* const r)`
+`#!c void (*post_timestep_modifications) (struct reb_simulation* const r)`
 :   Similar to the heartbeat function, these function pointers allow you to make changes before and after each timestep.
     These pointers are also used by REBOUNDx.
 
 ### Gravity
 
-`double G`                  
+`#!c double G`                  
 :   Gravitational constant. By default this value is 1. 
     If $G=1$, then an orbit with semi-major axis $a=1$ has a period of $P=2\pi$.
     See also the [discussion on units](units.md).
 
-`double softening`          
+`#!c double softening`          
 :   This is the gravitational softening parameter. 
     The gravitational force of a particle in the $x$ direction is calculated as
     $F_x = -x \frac{G m_1 m_2}{(x^2 +y^2 +z^2 + b^2)^{3/2}}$, where $b$ is the gravitational softening parameter.
     This can be used to remove strong force gradients on small scales, e.g. during close encounters.
     The default is 0 (no softening). 
 
-`double opening_angle2`     
+`#!c double opening_angle2`     
 :   This variable determines the accuracy of the gravity calculation when the tree bases gravity routine is used.
     It is the square of the cell opening angle $\theta$. 
     See [Rein & Liu](https://ui.adsabs.harvard.edu/abs/2012A%26A...537A.128R/abstract) for a discussion of the tree code.
 
-`unsigned int force_is_velocity_dependent` 
+`#!c unsigned int force_is_velocity_dependent` 
 :   If this variable is set to 0 (default), then the force can not contain velocity dependent terms.
     Setting this to 1 is slower but allows for velocity dependent forces (e.g. drag force). 
     Note that gravitational forces alone are not velocity dependent. 
     
-`unsigned int gravity_ignore_terms`        
+`#!c unsigned int gravity_ignore_terms`        
 :   This variable determines if the gravity form the central object is inlcuded in the gravity calculation.
     In general the integrators will set this variable automatically and nothing needs to be changed by the user.
     Possible values are:
@@ -222,7 +222,7 @@ To keep the documentation concise, variables which are only intended for interna
     - 1 ignore terms not required for WHFast with Jacobi coordinates
     - 2 ignore terms not required for WHFast with democratic heliocentirc coordinates
 
-`void (*additional_forces) (struct reb_simulation* const r)`
+`#!c void (*additional_forces) (struct reb_simulation* const r)`
 :   This function allows the user to add additional (non-gravitational) forces.
      
     !!! Todo
@@ -230,7 +230,7 @@ To keep the documentation concise, variables which are only intended for interna
 
 ### Particles
 
-`struct reb_particle* particles` 
+`#!c struct reb_particle* particles` 
 :   All particles are stored in this array.
     A particle is represented by the `reb_particle` structure in C.
     The python class `Particle` is an abstraction of the `reb_particle` structure in C.
@@ -261,13 +261,13 @@ To keep the documentation concise, variables which are only intended for interna
     - When integrating systems with the WHFast integrator, the central object needs to be added first.
     - When Jacobi coordinates are used, then the particles needs to be added from the inside out (star, inner planet, outer planet).
 
-`int N`                     
+`#!c int N`                     
 :   Current number of particles in this REBOUND simulation. 
     This number includes all active, test, and variational particles.
     The simulation stops when this number is 0 and there are no more particles in the simulation.
     The default is 0.
 
-`int N_active`              
+`#!c int N_active`              
 :   This is the number of active particles in the simulation.
     Only active particles contribute to the force in the gravity calculation.
     The default is -1 which means the number of active particles is equal to the number of particles, `N`. 
@@ -292,7 +292,7 @@ To keep the documentation concise, variables which are only intended for interna
         sim.N_active = 2
         ```
 
-`int testparticle_type`     
+`#!c int testparticle_type`     
 :   This determines the type of the particles with `index >= N_active`. 
     REBOUND supports two different test particle types:
 
@@ -301,63 +301,63 @@ To keep the documentation concise, variables which are only intended for interna
 
     Testparticles never feel each other.
 
-`int N_var`                 
+`#!c int N_var`                 
 :   Total number of variational particles. Default: 0.
 
-`int var_config_N`          
+`#!c int var_config_N`          
 :   Number of variational particle configurations. Default: 0.
 
 
 ### Collisions
 
 
-`int (*collision_resolve) (struct reb_simulation* const r, struct reb_collision)` 
+`#!c int (*collision_resolve) (struct reb_simulation* const r, struct reb_collision)` 
 :   This is a function pointer which determines how a collision is resolved. By default, it is NULL, assuming hard sphere model.
     A return value of 0 indicates that both particles remain in the simulation. A return value of 1 (2) indicates that particle 1 (2) should be removed from the simulation. A return value of 3 indicates that both particles should be removed from the simulation. 
     See [the discussion on collisions](collisions.md#resolving-collisions) for more information on how to use this function pointer. 
 
-`int track_energy_offset`   
+`#!c int track_energy_offset`   
 :   Set this variable to 1 to track energy change during collisions and ejections (default: 0).
     This is helpful if you want to keep track of an integrator's accuracy and physical collisions do not conserve energy.
 
-`double energy_offset`      
+`#!c double energy_offset`      
 :   Energy offset due to collisions and ejections (only calculated if `track_energy_offset=1`).
 
-`int collision_resolve_keep_sorted` 
+`#!c int collision_resolve_keep_sorted` 
 :   If set to 1, then particles are kept sorted when a particle is removed during a collision.
 
-`double minimum_collision_velocity`  
+`#!c double minimum_collision_velocity`  
 :   When collisions are resolved with the hard sphere collision resolve function, then the post impact velocity between the two particles will be at least as large as this value. Default 0. Setting this to a value larger than zero might prevent particles sinking into each other. 
 
-`double collisions_plog`    
+`#!c double collisions_plog`    
 :   This variable keeps track of momentum exchange during collisions. This can be used to calculate collisional viscosity in ring systems.
 
-`long collisions_Nlog`      
+`#!c long collisions_Nlog`      
 :   This variable keeps track of the number of collisions that have occured. This can be used to calculate statistical quantities of collisional systems.
 
-`double (*coefficient_of_restitution) (const struct reb_simulation* const r, double v)`
+`#!c double (*coefficient_of_restitution) (const struct reb_simulation* const r, double v)`
 :   This is a callback function which gets called when a hard-sphere collision occurs and the coefficient of restitution is required.
     By default, this function pointer is NULL and a coefficient of resitution of 1 is assumed.
     The impact velocity of the collision is given to allow for velocity dependent coefficients of restitution.
 
 ### Miscellaneous 
 
-`enum REB_STATUS status`    
+`#!c enum REB_STATUS status`    
 :   This variable indicates the current status of the simulation. By setting this to 1, one can force a graceful exit at the end of the next timestep.    
 
-`double exit_max_distance`  
+`#!c double exit_max_distance`  
 :   The integration will stop if any particle is further away from origin than this value.
 
-`double exit_min_distance`  
+`#!c double exit_min_distance`  
 :   The integration will stop if any two particles come closer together than this value.
 
-`double usleep`             
+`#!c double usleep`             
 :   Sleep this number of microseconds after each timestep. This can be useful for slowing down the simulation, for example for rendering visualizations.  
 
-`int nghostx`, `int nghosty`, `int nghostz`               
+`#!c int nghostx, nghosty,  nghostz`               
 :   Number of ghostboxes in x, y, and z directions. 
 
-`unsigned int rand_seed`    
+`#!c unsigned int rand_seed`    
 :   Seed for random number generators. This will be automatically initialized automatically to a random number based on the current time and the process id. However, it can also be set manually to make the simulation reproducible and always return the same sequence of random numbers.
 
 
@@ -366,34 +366,34 @@ To keep the documentation concise, variables which are only intended for interna
 The following variables in the simulation structure determine which modules are selected. 
 Modules are explained in detail on their [own page](modules.md).
 
-`enum visualization`
+`#!c enum visualization`
 
-`enum collision`
+`#!c enum collision`
 
-`enum integrator`
+`#!c enum integrator`
 
-`enum boundary`
+`#!c enum boundary`
 
-`enum gravity`
+`#!c enum gravity`
 
 ### Integrator configuration 
 
 The following variables in the simulation structure contain the configuration for the individual integrators. 
 They are described on their own [separate page](integrators.md). 
 
-`struct reb_simulation_integrator_sei ri_sei`
+`#!c struct reb_simulation_integrator_sei ri_sei`
 
-`struct reb_simulation_integrator_whfast ri_whfast`
+`#!c struct reb_simulation_integrator_whfast ri_whfast`
 
-`struct reb_simulation_integrator_saba ri_saba`
+`#!c struct reb_simulation_integrator_saba ri_saba`
 
-`struct reb_simulation_integrator_ias15 ri_ias15`
+`#!c struct reb_simulation_integrator_ias15 ri_ias15`
 
-`struct reb_simulation_integrator_mercurius ri_mercurius`
+`#!c struct reb_simulation_integrator_mercurius ri_mercurius`
 
-`struct reb_simulation_integrator_janus ri_janus`
+`#!c struct reb_simulation_integrator_janus ri_janus`
 
-`struct reb_simulation_integrator_eos ri_eos`
+`#!c struct reb_simulation_integrator_eos ri_eos`
 
 
 
