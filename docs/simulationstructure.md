@@ -230,8 +230,32 @@ To keep the documentation concise, variables which are only intended for interna
 `int var_config_N`          
 :   Number of variational particle configurations. Default: 0.
 
+
+### Collisions
+
+`int track_energy_offset`   
+:   Set this variable to 1 to track energy change during collisions and ejections (default: 0).
+    This is helpful if you want to keep track of an integrator's accuracy and physical collisions do not conserve energy.
+
+`double energy_offset`      
+:   Energy offset due to collisions and ejections (only calculated if `track_energy_offset=1`).
+
+`int collision_resolve_keep_sorted` 
+:   If set to 1, then particles are kept sorted when a particle is removed during a collision.
+
+`double minimum_collision_velocity`  
+:   When collisions are resolved with the hard sphere collision resolve function, then the post impact velocity between the two particles will be at least as large as this value. Default 0. Setting this to a value larger than zero might prevent particles sinking into each other. 
+
+`double collisions_plog`    
+:   This variable keeps track of momentum exchange during collisions. This can be used to calculate collisional viscosity in ring systems.
+
+`long collisions_Nlog`      
+:   This variable keeps track of the number of collisions that have occured. This can be used to calculate statistical quantities of collisional systems.
+
+### Miscellaneous 
+
 `enum REB_STATUS status`    
-:   This variable indicates the current status of the simulation. See below for possible values. By setting this to 1, one can force a graceful exit at the end of the next timestep.    
+:   This variable indicates the current status of the simulation. By setting this to 1, one can force a graceful exit at the end of the next timestep.    
 
 `double exit_max_distance`  
 :   The integration will stop if any particle is further away from origin than this value.
@@ -242,36 +266,46 @@ To keep the documentation concise, variables which are only intended for interna
 `double usleep`             
 :   Sleep this number of microseconds after each timestep. This can be useful for slowing down the simulation, for example for rendering visualizations.  
 
-`int track_energy_offset`   
-:   Track energy change during collisions and ejections (default: 0).
-
-`double energy_offset`      
-:   Energy offset due to collisions and ejections (only calculated if `track_energy_offset=1`).
-
-`int nghostx`               
-:   Number of ghostboxes in x direction. 
-
-`int nghosty`               
-:   Number of ghostboxes in y direction. 
-
-`int nghostz`               
-:   Number of ghostboxes in z direction. 
-
-`int collision_resolve_keep_sorted` 
-:   If set to one, then particles are kept sorted, even if `collision_resolve` removes particles during a collision. 
-
-`double minimum_collision_velocity`  
-:   When collisions are resolved with the hard sphere collision resolve function, then the post impact velocity between the two particles will be at least as large as this value. Default 0. Setting this to a value larger than zero might prevent particles sinking into each other. 
-
-`double collisions_plog`    
-:   This variable keeps track of momentum exchange. This can be used to calculate collisional viscosity in ring systems.
-
-`long collisions_Nlog`      
-:   Number of collisions that have occured. This can be used to calculate statistical quantities of collisional systems.
+`int nghostx`, `int nghosty`, `int nghostz`               
+:   Number of ghostboxes in x, y, and z directions. 
 
 `unsigned int rand_seed`    
 :   Seed for random number generators. This will be automatically initialized automatically to a random number based on the current time and the process id. However, it can also be set manually to make the simulation reproducible and always return the same sequence of random numbers.
 
+
+### Module selection 
+
+The following variables in the simulation structure determine which modules are selected. 
+Modules are explained in detail on their [own page](modules.md).
+
+`enum visualization`
+
+`enum collision`
+
+`enum integrator`
+
+`enum boundary`
+
+`enum gravity`
+
+### Integrator configuration 
+
+The following variables in the simulation structure contain the configuration for the individual integrators. 
+They are described on their own [separate page](integrators.md). 
+
+`struct reb_simulation_integrator_sei ri_sei`
+
+`struct reb_simulation_integrator_whfast ri_whfast`
+
+`struct reb_simulation_integrator_saba ri_saba`
+
+`struct reb_simulation_integrator_ias15 ri_ias15`
+
+`struct reb_simulation_integrator_mercurius ri_mercurius`
+
+`struct reb_simulation_integrator_janus ri_janus`
+
+`struct reb_simulation_integrator_eos ri_eos`
 
 ## Binary files and SimulationArchive
 You can use binary files to save simulations to a file and then later restore them from this file.
@@ -312,32 +346,7 @@ Examples of how to work with the SimulationArchive are provided in an [iPython](
 
 
 
-## Module selection 
 
-The following `struct reb_simulation` members determine the modules selected. Each of them is explained in detail on their own page. 
-
-Member                      | Description
---------------------------- | --------------
-`enum visualization`        | Determines the visualization used. 
-`enum collision`            | Determines the method used for finding collisions between particles. 
-`enum integrator`           | Determines the integrator used. 
-`enum boundary`             | Determines the boundary method. 
-`enum gravity`              | Determines the method used for calculating gravitational forces between particles. 
-
-## Integrator configuration 
-
-The following `struct reb_simulation` members contain the configuration for the individual integrators. They are described on their own [separate page](integrators.md). 
-
-Member                                                     | Description
----------------------------------------------------------- | --------------
-`struct reb_simulation_integrator_sei ri_sei`              | The SEI struct 
-`struct reb_simulation_integrator_whfast ri_whfast`        | The WHFast struct 
-`struct reb_simulation_integrator_saba ri_saba`            | The SABA struct 
-`struct reb_simulation_integrator_ias15 ri_ias15`          | The IAS15 struct
-`struct reb_simulation_integrator_mercurius ri_mercurius`  | The MERCURIUS struct
-`struct reb_simulation_integrator_janus ri_janus`          | The JANUS struct 
-`struct reb_simulation_integrator_eos ri_eos`              | The EOS struct 
-```
 
 ## Callback functions
 
