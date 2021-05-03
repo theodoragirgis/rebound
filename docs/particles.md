@@ -1,7 +1,4 @@
-# Adding particles
-Once you've created a [simulation object](simulationstructure.md), you can add particles to it. 
-REBOUND supports several different ways to do that. 
-Also check out the [discussion on manipulating particles](manipulations.md).
+# Working with particles
 
 ## Particle structure
 A particle is represented by the `reb_particle` structure in C.
@@ -22,6 +19,12 @@ The particle object constains the follwoing variables which can be directly mani
 `#!c uint32_t hash`
 :   integer or hash value used to identify the particle
 
+## Adding particles
+Once you've created a [simulation object](simulationstructure.md), you can add particles to it. 
+REBOUND supports several different ways to do that. 
+Also check out the [discussion on manipulating particles](manipulations.md).
+
+### Adding particles manually
 One way to add a particle to a simulation is to first manually create a particle object, then calling a function to add the particle to the simulation.
 Because the function will make a copy of the particle, you can safely delete the original particle object after you've added it to a simulation. 
 The following code shows an example on how to add particles this way:
@@ -87,7 +90,7 @@ You can also use orbital parameters to initialize the particle object.
         In most cases you can simply use the convience function described below.
         This way you don't have to create a particle object just to add it to the simulation.
 
-## Convenience functions
+### Convenience functions
 By far the easiest way to add particles to REBOUND is to use a convenience function.
 === "C"
     In C, the function is called `reb_add_fmt` and has the following syntax:
@@ -160,7 +163,7 @@ By far the easiest way to add particles to REBOUND is to use a convenience funct
 See [the discussion on orbital elements](orbitalelements.md) for more details.
 
 
-## Solar System planets
+### Solar System planets
 If you want to quickly try something out, you can use a set of initial conditions for the Solar System that come with REBOUND: 
 
 ```python
@@ -180,3 +183,82 @@ This is currently only supported in python.
 
 !!! Note
     These initial conditions are intended for testing integration methods. They might not be very accurate and should not be used for detailed dynamical studies of the Solar System.
+
+
+## Removing particles
+
+### Removing all particles
+
+You can remove all particles with the following code:
+
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    // ... add particles ...
+    reb_remove_all(r);
+    ```
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    # ... add particles ...
+    del sim.particles
+    ```
+### Remove particle by index
+Each particle in a REBOUND simulation can be uniquely identified with its position in the `particles` array, it's **index**.
+You can remove a particle using this index as shown in the following code:
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    reb_add_fmt(r, "m", 1.); // star, index=0
+    reb_add_fmt(r, "a", 1.); // planet 1, index=1
+    reb_add_fmt(r, "a", 2.); // planet 2, index=2
+    reb_remove(r, 1, 1); // removes planet 1 (index 1)
+    ```
+    The first argument of `reb_remove` is the simulation from which you want to remove the particle.
+    The second argument is the index of the particle.
+    The third argument determines if you want to keep the particle array sorted.
+    In most cases you want to (set the argument to 1). 
+    For simulation with many particles (millions), this might be slow. In that case set this argument to 0.
+
+    The function retursn 1 if the particle was successfully removed, and 0 if the index was out of range.
+
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    sim.add(m=1.) // star, index=0
+    sim.add(a=1.) // planet 1, index=1
+    sim.add(a=2.) // planet 2, index=2
+    sim.remove(1)
+    ```
+    The `remove` function accepts an optional argument `keepSorted`. 
+    It determines if you want to keep the particle array sorted.
+    In most cases you want to (set the argument to `True`, the default). 
+    For simulation with many particles (millions), this might be slow. In that case set this argument to `False`.
+
+### Remove particle by hash
+In addition to the index, you can also identify particles by hash.
+This is useful when you want to make sure you can uniquely identify particles in simulations where you constantly add or remove particles. 
+If a particle has a hash, you can remove it as shown here:
+
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    reb_add_fmt(r, "m", 1.); 
+    r->particles[0].hash = reb_hash("star");
+    reb_add_fmt(r, "a", 1.); 
+    r->particles[1].hash = reb_hash("planet1");
+    reb_add_fmt(r, "a", 2.); 
+    r->particles[2].hash = reb_hash("planet2");
+    reb_remove_by_hash(r, reb_hash("planet1"), 1);
+    ```
+    The syntax of the function is the same as for `reb_remove` except you pass the hash instead of the index.
+
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    sim.add(m=1., hash="star")
+    sim.add(a=1., hash="planet1")
+    sim.add(a=2., hash="planet2")
+    sim.remove(hash="planet1")
+    ```
+

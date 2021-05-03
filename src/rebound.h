@@ -796,43 +796,7 @@ void reb_reset_temporary_pointers(struct reb_simulation* const r);
 int reb_reset_function_pointers(struct reb_simulation* const r);
 /** @endcond */
 
-/** 
- * @brief Adds a particle to the simulation. 
- * @details This function adds the particle pt to the simulation. 
- * @param r The rebound simulation to which the particle will be added
- * @param pt The particle to be added. Note that this is a structure, not a reference to a structure.
- */
-void reb_add(struct reb_simulation* const r, struct reb_particle pt);
 
-/**
- * @brief Remove all particles
- * @param r The rebound simulation to be considered
- */
-void reb_remove_all(struct reb_simulation* const r);
-
-/**
- * @brief Remove a particle by the position in particles array
- * @param r The rebound simulation to be considered
- * @param index The index in the particles array of the particle to be removed.
- * @param keepSorted Set to 1, then particles with indices higher than index
- * are all shifted down one position, ensuring the ordering remains.
- * @return Returns 1 if particle was successfully removed, 0 if index passed was 
- * out of range.
- */
-int reb_remove(struct reb_simulation* const r, int index, int keepSorted);
-
-/**
- * @brief Remove a particle by its hash.
- * @details see examples/removing_particles_from_simulation.
- * @param r The rebound simulation to be considered
- * @param id The hash of the particle to be removed.
- * @param keepSorted If set to 1 keep the particles with indices in the particles array
- * higher than the one with the passed id are all shifted down one position,
- * ensuring the ordering remains. 
- * @return Returns 1 if particle successfully removed,
- * 0 if hash was not found in the particles array.
- */
-int reb_remove_by_hash(struct reb_simulation* const r, uint32_t hash, int keepSorted);
 
 /**
  * @brief Get a pointer to a particle by its hash.
@@ -969,12 +933,18 @@ double reb_tools_mod2pi(double f);
  */
 double reb_tools_M_to_f(double e, double M);
 
-// Function to add and initialize particles
+// Functions to add and initialize particles
+void reb_add(struct reb_simulation* const r, struct reb_particle pt);
 void reb_add_fmt(struct reb_simulation* r, const char* fmt, ...);
 struct reb_particle reb_particle_new(struct reb_simulation* r, const char* fmt, ...);    // Same as reb_add_fmt() but returns the particle instead of adding it to the simualtion.
 struct reb_particle reb_tools_orbit_to_particle_err(double G, struct reb_particle primary, double m, double a, double e, double i, double Omega, double omega, double f, int* err);
 struct reb_particle reb_tools_orbit_to_particle(double G, struct reb_particle primary, double m, double a, double e, double i, double Omega, double omega, double f);
 struct reb_particle reb_tools_pal_to_particle(double G, struct reb_particle primary, double m, double a, double lambda, double k, double h, double ix, double iy);
+
+// Functions to remove particles
+void reb_remove_all(struct reb_simulation* const r);
+int reb_remove(struct reb_simulation* const r, int index, int keepSorted);
+int reb_remove_by_hash(struct reb_simulation* const r, uint32_t hash, int keepSorted);
 
 /**
  * @brief This function calculates orbital elements for a given particle, passing an error variable to flag why orbit is set to nan.

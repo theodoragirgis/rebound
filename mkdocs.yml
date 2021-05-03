@@ -8,7 +8,7 @@ nav:
     - quickstart.md
     - c_compile.md
     - simulationstructure.md
-    - addingparticles.md
+    - particles.md
   - "Modules":
     - modules.md
     - integrators.md
