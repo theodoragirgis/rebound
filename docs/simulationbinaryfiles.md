@@ -29,11 +29,8 @@ Below is an example on how to work with binary files.
     sim2 = None 
     ```
 
-Rather than using one file for one snapshot of a simulation, you can also use a SimulationArchive.
-A SimulationArchive is a collection of simulation snapshots stored in one binary file. 
-The concepts behind the SimulationArchive are described in detail in [Rein & Tamayo 2017](https://ui.adsabs.harvard.edu/abs/2017MNRAS.467.2377R/abstract).
-
-Examples of how to work with the SimulationArchive are provided in an [iPython](ipython_examples/SimulationArchive.ipynb) and [C example](c_examples/simulationarchive.md).
+Rather than using one file for one snapshot of a simulation, you can also use a [Simulation Archive](simulationarchive.md).
+A Simulation Archive is a collection of simulation snapshots stored in one binary file. 
 
 
 

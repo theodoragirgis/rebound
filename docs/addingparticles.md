@@ -1,5 +1,5 @@
 # Adding particles
-Once you've created a [simulation object](simulationstructure.md), you can add particles to it. 
+Once you've created a [simulation object](simulation.md), you can add particles to it. 
 REBOUND supports several different ways to do that. 
 Also check out the [discussion on manipulating particles](manipulations.md).
 

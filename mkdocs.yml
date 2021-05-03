@@ -26,6 +26,7 @@ nav:
   - 'Other concepts':
     - units.md
     - orbitalelements.md
+    - simulationarchive.md
     - c_randomsamplingfunctions.md
     - c_outputfunctions.md
     - manipulations.md

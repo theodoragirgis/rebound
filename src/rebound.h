@@ -446,34 +446,6 @@ struct reb_binary_field {
     uint64_t size;  // Size in bytes of field (only counting what follows, not the binary field, itself).
 };
 
-/**
- * @brief This structure is used to save and load simulation archive files.
- */
-struct reb_simulationarchive_blob {
-    int32_t index;                         ///< Index of previous blob (binary file is 0, first blob is 1)
-    int16_t offset_prev;                   ///< Offset to beginning of previous blob (size of previous blob).
-    int16_t offset_next;                   ///< Offset to end of following blob (size of following blob).
-};
-
-
-/**
- * @brief This structure is used to save and load SimulationArchive files.
- * @details Everthing in this struct is handled by REBOUND itself. Users 
- * should not need to access this struct manually.
- */
-struct reb_simulationarchive{
-    FILE* inf;              ///< File pointer (will be kept open)
-    char* filename;         ///< Filename of open file
-    int version;            ///< SimulationArchive version
-    long size_first;        ///< Size of first snapshot (only used for version 1)
-    long size_snapshot;     ///< Size of snapshot (only used for version 1)
-    double auto_interval;   ///< Interval setting used to create SA (if used)
-    double auto_walltime;   ///< Walltime setting used to create SA (if used)
-    unsigned long long auto_step;  ///< Steps in-between SA snapshots (if used)
-    long nblobs;            ///< Total number of snapshots (including initial binary)
-    uint32_t* offset;       ///< Index of offsets in file (length nblobs)
-    double* t;              ///< Index of simulation times in file (length nblobs)
-};
 
 /**
  * @brief Holds a particle's hash and the particle's index in the particles array.
@@ -942,33 +914,12 @@ void reb_remove_all(struct reb_simulation* const r);
 int reb_remove(struct reb_simulation* const r, int index, int keepSorted);
 int reb_remove_by_hash(struct reb_simulation* const r, uint32_t hash, int keepSorted);
 
-/**
- * @brief This function calculates orbital elements for a given particle, passing an error variable to flag why orbit is set to nan.
- * @details Error codes:\n
- * 1. Primary has no mass.\n
- * 2. Particle and primary positions are the same.\n
- * @param G The gravitational constant.
- * @param p reb_particle for which the orbit is calculated.
- * @param primary Particle structure for the orbit's reference body.
- * @param err error code for checking why orbit was set to nans.
- * @return reb_orbit struct with orbital parameters. 
- */
+// Orbit calculation
 struct reb_orbit reb_tools_particle_to_orbit_err(double G, struct reb_particle p, struct reb_particle primary, int* err);
-
-/**
- * @brief This function calculates orbital elements for a given particle. 
- * @param G The gravitational constant.
- * @param p reb_particle for which the orbit is calculated.
- * @param primary Particle structure for the orbit's reference body.
- * @return reb_orbit struct with orbital parameters. 
- */
 struct reb_orbit reb_tools_particle_to_orbit(double G, struct reb_particle p, struct reb_particle primary);
 
 
-
-/**
- * @brief Enum describing possible errors that might occur during binary file reading.
- */
+// Possible errors that might occur during binary file reading.
 enum reb_input_binary_messages {
     REB_INPUT_BINARY_WARNING_NONE = 0,
     REB_INPUT_BINARY_ERROR_NOFILE = 1,
@@ -983,18 +934,10 @@ enum reb_input_binary_messages {
     REB_INPUT_BINARY_WARNING_CORRUPTFILE = 512,
 };
 
-/**
- * @brief This function sets up a Plummer sphere.
- * @param r The rebound simulation to be considered
- * @param _N Number of particles in the plummer sphere.
- * @param M Total mass of the cluster.
- * @param R Characteristic radius of the cluster.
- */
+// This function sets up a Plummer sphere, N=number of particles, M=total mass, R=characteristic radius
 void reb_tools_init_plummer(struct reb_simulation* r, int _N, double M, double R);
 
 /**
- * \name Derivative functions
- * @{
  * @brief This function calculates the first/second derivative of a Keplerian orbit. 
  * @details Derivatives of Keplerian orbits are required for variational equations, in particular
  *          for optimization problems. 
@@ -1076,8 +1019,6 @@ struct reb_particle reb_derivatives_m_Omega(double G, struct reb_particle primar
 struct reb_particle reb_derivatives_omega_f(double G, struct reb_particle primary, struct reb_particle po);
 struct reb_particle reb_derivatives_m_omega(double G, struct reb_particle primary, struct reb_particle po);
 struct reb_particle reb_derivatives_m_f(double G, struct reb_particle primary, struct reb_particle po);
-/** @} */
-/** @} */
 
 // Functions to operate on particles
 void reb_particle_isub(struct reb_particle* p1, struct reb_particle* p2);
@@ -1099,91 +1040,36 @@ struct reb_particle reb_get_com(struct reb_simulation* r);
 struct reb_particle reb_get_com_of_pair(struct reb_particle p1, struct reb_particle p2);
 
 
+// Simulation Archive
+struct reb_simulationarchive_blob {  // Used in the binary file to identify data blobs
+    int32_t index;                   // Index of previous blob (binary file is 0, first blob is 1)
+    int16_t offset_prev;             // Offset to beginning of previous blob (size of previous blob).
+    int16_t offset_next;             // Offset to end of following blob (size of following blob).
+};
 
-/**
- * @defgroup SimulationArchiveFunctions Simulation Archive functions
- * Functions for interacting with simulation archives
- * @{
- */
-
-/**
- * @brief Allocates a simulation and sets it to a specific snapshot in a SimulationArchive file.
- */
+struct reb_simulationarchive{
+    FILE* inf;                   // File pointer (will be kept open)
+    char* filename;              // Filename of open file
+    int version;                 // SimulationArchive version
+    long size_first;             // Size of first snapshot (only used for version 1)
+    long size_snapshot;          // Size of snapshot (only used for version 1)
+    double auto_interval;        // Interval setting used to create SA (if used)
+    double auto_walltime;        // Walltime setting used to create SA (if used)
+    unsigned long long auto_step;// Steps in-between SA snapshots (if used)
+    long nblobs;                 // Total number of snapshots (including initial binary)
+    uint32_t* offset;            // Index of offsets in file (length nblobs)
+    double* t;                   // Index of simulation times in file (length nblobs)
+};
 struct reb_simulation* reb_create_simulation_from_simulationarchive(struct reb_simulationarchive* sa, long snapshot);
-
-/**
- * @brief Equivalent to reb_create_simulation_from_simulationarchive() but also processes warning messages.
- */
 void reb_create_simulation_from_simulationarchive_with_messages(struct reb_simulation* r, struct reb_simulationarchive* sa, long snapshot, enum reb_input_binary_messages* warnings);
-
-/**
- * @brief Opens a SimulationArchive
- * @details This function opens a SimulationArchive file and creates an index to 
- * find snapshots within the file. This may take a few seconds if there are many 
- * snapshots in the file. Note that opening a file on a slow filesystem (for example
- * via a network) might be particularly slow. The file is kept open until 
- * the user calls reb_close_simulationarchive.
- * @param filename The path and filename of the SimulationArchive input file.
- * @return Returns a reb_simulationarchive struct.
- */
 struct reb_simulationarchive* reb_open_simulationarchive(const char* filename);
-
-/**
- * @brief Closes a SimulationArchive
- * @details This function closes a SimulationArchive that was previously opened
- * by the reb_open_simulationarchive function. It also destroys the index created
- * and frees the allocated memory. 
- * @param sa The SimulationArchive to be closed.
- */
 void reb_close_simulationarchive(struct reb_simulationarchive* sa);
-
-/**
- * @brief Appends a SimulationArchive snapshot to a file
- * @details This function can either be called manually or via one of the convenience methods
- * reb_simulationarchive_automate_interval and reb_simulationarchive_automate_walltime.
- * If the file does not exist, the function outputs a binary file. If a file exists,
- * it appends a SimulationArchive snapshot to that file. 
- * @param r The rebound simulation to be considered.
- * @param filename The path and filename of the SimulationArchive output file.
- */
 void reb_simulationarchive_snapshot(struct reb_simulation* r, const char* filename);
-
-/**
- * @brief Automatically create a SimulationArchive Snapshot at regular intervals
- * @param r The rebound simulation to be considered.
- * @param filename The path and filename of the SimulationArchive output file.
- * @param interval The interval between snapshots (in simulation time units).
- */
 void reb_simulationarchive_automate_interval(struct reb_simulation* const r, const char* filename, double interval);
-
-/**
- * @brief Automatically create a SimulationArchive Snapshot at regular walltime intervals
- * @param r The rebound simulation to be considered.
- * @param filename The path and filename of the SimulationArchive output file.
- * @param interval The walltime interval between snapshots (in seconds).
- */
 void reb_simulationarchive_automate_walltime(struct reb_simulation* const r, const char* filename, double walltime);
-
-/**
- * @brief Automatically create a SimulationArchive Snapshot after a fixed number of timesteps
- * @param r The rebound simulation to be considered.
- * @param filename The path and filename of the SimulationArchive output file.
- * @param unsigned long long The number of timesteps between snapshots.
- */
 void reb_simulationarchive_automate_step(struct reb_simulation* const r, const char* filename, unsigned long long step);
-
-
-/**
- * @cond PRIVATE
- */
-
-/**
- * @brief Frees all the pointers in a SimulationArchive structure
- * @param sa The SimulationArchive to be closed.
- */
 void reb_free_simulationarchive_pointers(struct reb_simulationarchive* sa);
 
-/** @endcond */
 
 // Functions to between coordinate systems
 
