@@ -39,53 +39,6 @@
 #include "communication_mpi.h"
 #endif
 
-double reb_read_double(int argc, char** argv, const char* argument, double _default){
-    char* value = reb_read_char(argc,argv,argument);
-    if (value){
-        return atof(value);
-    }
-    return _default;
-}
-
-int reb_read_int(int argc, char** argv, const char* argument, int _default){
-    char* value = reb_read_char(argc,argv,argument);
-    if (value){
-        return atoi(value);
-    }
-    return _default;
-}
-
-
-char* reb_read_char(int argc, char** argv, const char* argument){
-    opterr = 0;
-    optind = 1;
-    while (1) {
-        struct option long_options[] = {
-            {NULL, required_argument, 0, 'a'},
-            {0,0,0,0}
-        };
-
-        long_options[0].name = argument;
-
-        /* getopt_long stores the option index here.   */
-        int option_index = 0;
-        //              short options. format abc:d::
-        int c = getopt_long (argc, argv, "", long_options, &option_index);
-
-        /* Detect the end of the options.   */
-        if (c == -1) break;
-
-        switch (c){
-            case 'a':
-                return optarg;
-                break;
-            default:
-                break;
-        }
-    }
-    return NULL;
-}
-
 static size_t reb_fread(void *restrict ptr, size_t size, size_t nitems, FILE *restrict stream, char **restrict mem_stream){
     if (mem_stream!=NULL){
         // read from memory

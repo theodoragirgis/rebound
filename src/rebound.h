@@ -1035,35 +1035,6 @@ enum reb_input_binary_messages {
 void reb_tools_init_plummer(struct reb_simulation* r, int _N, double M, double R);
 
 /**
- * @brief Reads arguments from the command line.
- * @param argc Number of command line arguments.
- * @param argv Array of command line arguments.
- * @param argument Argument to look for.
- * @return Returns NULL if argument was not given. Return the argument otherwise.
- */
-char* reb_read_char(int argc, char** argv, const char* argument);
-
-/**
- * @brief Reads arguments as a double value from the command line.
- * @param argc Number of command line arguments.
- * @param argv Array of command line arguments.
- * @param argument Argument to look for.
- * @param _default Default value.
- * @return Returns _default if argument was not given. Return the argument converted to double otherwise.
- */
-double reb_read_double(int argc, char** argv, const char* argument, double _default);
-
-/**
- * @brief Reads arguments as a int value from the command line.
- * @param argc Number of command line arguments.
- * @param argv Array of command line arguments.
- * @param argument Argument to look for.
- * @param _default Default value.
- * @return Returns _default if argument was not given. Return the argument converted to int otherwise.
- */
-int reb_read_int(int argc, char** argv, const char* argument, int _default);
-
-/**
  * \name Derivative functions
  * @{
  * @brief This function calculates the first/second derivative of a Keplerian orbit. 
