@@ -1187,45 +1187,17 @@ struct reb_particle reb_derivatives_m_f(double G, struct reb_particle primary, s
 /** @} */
 /** @} */
 
-/**
- * @defgroup ParticleManipFunctions Particle manipulation functions
- * List of reb_particle manipulation functions for REBOUND
- * @{
- */
-/**
- * @brief Subtract particle p2 from particle p1 (p1 - p2).
- * @details Subtracts positions, velocities, and mass element by element. 
- * @param p1 First reb_particle (will be modified)
- * @param p2 Second reb_particle to subtract from p1.
- * @returns A new particle with no pointers (not in any simulation etc.) set.
- */
+// Functions to operate on particles
 void reb_particle_isub(struct reb_particle* p1, struct reb_particle* p2);
-
-/**
- * @brief Add particle p2 to particle p1.
- * @details Adds positions, velocities, and mass element by element. 
- * @param p1 First reb_particle (will be modified)
- * @param p2 Second reb_particle.
- */
 void reb_particle_iadd(struct reb_particle* p1, struct reb_particle* p2);
-
-/**
- * @brief Multiply a particle's members by a constant.
- * @details Multiplies particle's positions, velocities, and mass by a constant.
- * @param p1 reb_particle to modify.
- * @param value Value by which to multiply particle's fields.
- */
 void reb_particle_imul(struct reb_particle* p1, double value);
-
-/**
- * @brief Calculate the distance between two particles.
- * @param p1 reb_particle First particle.
- * @param p2 reb_particle Second particle.
- * @param value Distance between p1 and p2.
- */
 double reb_particle_distance(struct reb_particle* p1, struct reb_particle* p2);
 
-/** @} */
+// Functions to operate on simulations
+void reb_simulation_imul(struct reb_simulation* r, double scalar_pos, double scalar_vel);
+int reb_simulation_iadd(struct reb_simulation* r, struct reb_simulation* r2);
+int reb_simulation_isub(struct reb_simulation* r, struct reb_simulation* r2);
+
 
 /**
  * @defgroup SimulationArchiveFunctions Simulation Archive functions
