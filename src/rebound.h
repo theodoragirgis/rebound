@@ -701,19 +701,6 @@ void reb_mpi_finalize(struct reb_simulation* const r);
 void reb_omp_set_num_threads(int num_threads);
 #endif // OPENMP
 
-
-
-/**
- * @brief Get a pointer to a particle by its hash.
- * @details see examples/uniquely_identifying_particles_with_hashes.
- * @param r The rebound simulation to be considered.
- * @param hash The hash of the particle to search for.
- * @return A pointer to the particle if found, NULL otherwise.
-*/
-struct reb_particle* reb_get_particle_by_hash(struct reb_simulation* const r, uint32_t hash);
-
-
-
 // Mercurius switching functions
 double reb_integrator_mercurius_L_mercury(const struct reb_simulation* const r, double d, double dcrit);           
 double reb_integrator_mercurius_L_infinite(const struct reb_simulation* const r, double d, double dcrit);           
@@ -758,31 +745,12 @@ void reb_serialize_particle_data(struct reb_simulation* r, uint32_t* hash, doubl
 void reb_set_serialized_particle_data(struct reb_simulation* r, uint32_t* hash, double* m, double* radius, double (*xyz)[3], double (*vxvyvz)[3], double (*xyzvxvyvz)[6]);
 
 /**
- * @brief Takes the center of mass of a system of particles and returns the center of mass with one of the particles removed. 
- * @param com A particle structure that holds the center of mass state for a system of particles (mass, position, velocity).
- * @param p The particle to be removed from com.
- * @return The center of mass with particle p removed.
- */
-
-struct reb_particle reb_get_com_without_particle(struct reb_particle com, struct reb_particle p);
-
-/**
  * @brief Returns a particle pointer's index in the simulation it's in.
  * @param p A pointer to the particle 
  * @return The integer index of the particle in its simulation (will return -1 if not found in the simulation).
  */
 int reb_get_particle_index(struct reb_particle* p);
 
-/**
- * @brief Returns the center of mass for particles with indices between first (inclusive) and last (exclusive).
- * @details For example, reb_get_com_range(r, 6, 9) returns COM for particles 6, 7 and 8. 
- * @param r A pointer to the simulation structure.
- * @param first First index in range to consider.
- * @param last Will consider particles with indices < last (i.e., particle with index last not considered).
- * @return A reb_particle structure for the center of mass of all particles in range [first, last). Returns particle filled with zeros if passed last <= first.
- */
-
-struct reb_particle reb_get_com_range(struct reb_simulation* r, int first, int last);
 
 /**
  * @brief Returns the jacobi center of mass for a given particle
@@ -793,22 +761,6 @@ struct reb_particle reb_get_com_range(struct reb_simulation* r, int first, int l
 struct reb_particle reb_get_jacobi_com(struct reb_particle* p);
 /** @} */
 
-/**
- * @brief This function compares two REBOUND simulations and records the difference in a buffer.
- * @details This is used for taking a SimulationArchive Snapshot.
- * @param buf1 The buffer corresponding to the first rebound simulation to be compared
- * @param buf2 The buffer corresponding to the second rebound simulation to be compared
- * @param bufp The buffer which will contain the differences. 
- */
-void reb_binary_diff(char* buf1, size_t size1, char* buf2, size_t size2, char** bufp, size_t* sizep);
-
-/**
- * @brief Same as reb_binary_diff but with more options.
- * @param output_option If set to 0, the differences are written to bufp. If set to 1, printed on the screen. If set to 2, then only the return value indicates any differences.
- * @return 0 is returned if the simulations do not differ (are equal). 1 is return if they differ.
- */
-int reb_binary_diff_with_options(char* buf1, size_t size1, char* buf2, size_t size2, char** bufp, size_t* sizep, int output_option);
-
 // Output functions
 int reb_output_check(struct reb_simulation* r, double interval);
 void reb_output_timing(struct reb_simulation* r, const double tmax);
@@ -817,6 +769,13 @@ void reb_output_binary(struct reb_simulation* r, const char* filename);
 void reb_output_ascii(struct reb_simulation* r, char* filename);
 void reb_output_binary_positions(struct reb_simulation* r, const char* filename);
 void reb_output_velocity_dispersion(struct reb_simulation* r, char* filename);
+
+// Compares two simulations, stores difference in buffer.
+void reb_binary_diff(char* buf1, size_t size1, char* buf2, size_t size2, char** bufp, size_t* sizep); 
+// Same as reb_binary_diff, but with options.
+// output_option If set to 0, the differences are written to bufp. If set to 1, printed on the screen. If set to 2, then only the return value indicates any differences.
+// returns 0 is returned if the simulations do not differ (are equal). 1 is return if they differ.
+int reb_binary_diff_with_options(char* buf1, size_t size1, char* buf2, size_t size2, char** bufp, size_t* sizep, int output_option);
 
 // Input functions
 struct reb_simulation* reb_create_simulation_from_binary(char* filename);
@@ -837,15 +796,15 @@ struct reb_particle reb_tools_orbit_to_particle_err(double G, struct reb_particl
 struct reb_particle reb_tools_orbit_to_particle(double G, struct reb_particle primary, double m, double a, double e, double i, double Omega, double omega, double f);
 struct reb_particle reb_tools_pal_to_particle(double G, struct reb_particle primary, double m, double a, double lambda, double k, double h, double ix, double iy);
 
-// Functions to remove particles
+// Functions to access and remove particles
 void reb_remove_all(struct reb_simulation* const r);
 int reb_remove(struct reb_simulation* const r, int index, int keepSorted);
 int reb_remove_by_hash(struct reb_simulation* const r, uint32_t hash, int keepSorted);
+struct reb_particle* reb_get_particle_by_hash(struct reb_simulation* const r, uint32_t hash);
 
 // Orbit calculation
 struct reb_orbit reb_tools_particle_to_orbit_err(double G, struct reb_particle p, struct reb_particle primary, int* err);
 struct reb_orbit reb_tools_particle_to_orbit(double G, struct reb_particle p, struct reb_particle primary);
-
 
 // Possible errors that might occur during binary file reading.
 enum reb_input_binary_messages {
@@ -964,6 +923,7 @@ double reb_tools_energy(const struct reb_simulation* const r);
 struct reb_vec3d reb_tools_angular_momentum(const struct reb_simulation* const r);
 struct reb_particle reb_get_com(struct reb_simulation* r);
 struct reb_particle reb_get_com_of_pair(struct reb_particle p1, struct reb_particle p2);
+struct reb_particle reb_get_com_range(struct reb_simulation* r, int first, int last);
 
 
 // Simulation Archive

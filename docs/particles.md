@@ -44,3 +44,23 @@ You then access the particle using the simulation's `particles` array:
     # ... setup simulation, add particles ... 
     sim.particles[0].x = 1
     ```
+
+Alternatively you can assign a hash value to particles and access them using the following syntax: 
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    reb_add_fmt(r, "m", 1.); 
+    r->particles[0].hash = reb_hash("star");
+    reb_add_fmt(r, "a", 1.); 
+    r->particles[1].hash = reb_hash("planet1");
+    struct reb_particle* p = reb_get_particle_by_hash(r, reb_hash("planet1"));
+    ```
+
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    sim.add(m=1., hash="star")
+    sim.add(a=1., hash="planet1")
+    p = sim.particles["planet1"]
+    ```
+

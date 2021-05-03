@@ -21,7 +21,7 @@ In those cases use this syntax:
     sim.integrate(100.) # integrate until t=100.
     ```
 
-The above code will integrate the simulation until it reaches exactly the time requested.
+The integrate function will integrate the simulation until it reaches exactly the time requested.
 In most cases the time requested will not be an exact multiple of the timestep, so the timestep will have to be reduced during the last timestep. 
 After the requested time has been reached, the timestep will be reverted back to its original value. 
 
