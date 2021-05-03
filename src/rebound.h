@@ -920,6 +920,10 @@ void reb_output_ascii(struct reb_simulation* r, char* filename);
 void reb_output_binary_positions(struct reb_simulation* r, const char* filename);
 void reb_output_velocity_dispersion(struct reb_simulation* r, char* filename);
 
+// Input functions
+struct reb_simulation* reb_create_simulation_from_binary(char* filename);
+
+
 /**
  * @brief Returns f modulo 2 pi. Return value is in the range [0, 2pi)
  */
@@ -969,14 +973,6 @@ struct reb_orbit reb_tools_particle_to_orbit_err(double G, struct reb_particle p
 struct reb_orbit reb_tools_particle_to_orbit(double G, struct reb_particle p, struct reb_particle primary);
 
 
-/**
- * @brief Reads a binary file.
- * @details Also initialises the particles array with data form the binary file.
- * This can be used to restart a simulation.
- * @param filename Filename to be read.
- * @return Returns a pointer to a REBOUND simulation.
- */
-struct reb_simulation* reb_create_simulation_from_binary(char* filename);
 
 /**
  * @brief Enum describing possible errors that might occur during binary file reading.
