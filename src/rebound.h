@@ -652,12 +652,21 @@ struct reb_orbit {
 };
 
 
-// reb_simulation life cycle
+// Simulation life cycle
 struct reb_simulation* reb_create_simulation(void);     // allocates memory, then calls reb_init_simulation
 void reb_init_simulation(struct reb_simulation* r);    
 void reb_free_simulation(struct reb_simulation* const r);
 struct reb_simulation* reb_copy_simulation(struct reb_simulation* r);
+void reb_free_pointers(struct reb_simulation* const r);
+void reb_reset_temporary_pointers(struct reb_simulation* const r);
+int reb_reset_function_pointers(struct reb_simulation* const r); // Returns 1 if one ore more function pointers were not NULL before.
 
+// Timestepping
+void reb_step(struct reb_simulation* const r);
+void reb_steps(struct reb_simulation* const r, unsigned int N_steps);
+enum REB_STATUS reb_integrate(struct reb_simulation* const r, double tmax);
+void reb_integrator_synchronize(struct reb_simulation* r);
+void reb_integrator_reset(struct reb_simulation* r);
 
 /**
  * @brief Compares to REBOUND simulations bit by bit.
@@ -668,49 +677,6 @@ struct reb_simulation* reb_copy_simulation(struct reb_simulation* r);
  * @param output_option Is set to 1, then the output is printed on the screen. If set to 2, only the return value indicates if the simulations are different. 
  */
 int reb_diff_simulations(struct reb_simulation* r1, struct reb_simulation* r2, int output_option);
-
-/**
- * @brief Perform one integration step
- * @details You rarely want to call this function yourself.
- * Use reb_integrate instead.
- * @param r The rebound simulation to be integrated by one step.
- */
-void reb_step(struct reb_simulation* const r);
-
-/**
- * @brief Perform a fixed number of integration steps
- * @details You rarely want to call this function yourself.
- * Use reb_integrate instead.
- * @param r The rebound simulation to be integrated.
- * @param N_steps The number of steps to be taken. 
- */
-void reb_steps(struct reb_simulation* const r, unsigned int N_steps);
-
-/**
- * @brief Performs the actual integration
- * @details This function performs an integration  from the current time t until time tmax.
- * @param r The rebound simulation to be integrated.
- * @param tmax The time to be integrated to. Set this to INFINITY to integrate forever.
- * @return This function returns an integer, indicating the success of the integration.
- */
-enum REB_STATUS reb_integrate(struct reb_simulation* const r, double tmax);
-
-/**
- * @brief Synchronize particles manually at end of timestep
- * @details This function should be called if the WHFAST integrator
- * is used, safe_mode is set to zero and an output is needed.
- * This advances the positions and velocities to be synchronized.
- * If enabled, it also applies the symplectic corrector.
- * If safe_mode is enabled, this function has no effect.
- * @param r The rebound simulation to be synchronized
- */
-void reb_integrator_synchronize(struct reb_simulation* r);
-
-/** 
- * @brief Cleanup all temporarily stored integrator values.
- * @param r The rebound simulation to be considered
- **/
-void reb_integrator_reset(struct reb_simulation* r);
 
 /**
  * @brief Configure the boundary/root box
@@ -725,18 +691,6 @@ void reb_integrator_reset(struct reb_simulation* r);
 void reb_configure_box(struct reb_simulation* const r, const double boxsize, const int root_nx, const int root_ny, const int root_nz);
 
 
-/**
- * @cond PRIVATE
- */
-
-/**
- * @brief Frees up all space used by a REBOUND simulation, but not the reb_simulation structure itself.
- * @details The REBOUND simulation is not usable anymore after being passed to this function.
- * @param r The rebound simulation to be freed
- */
-void reb_free_pointers(struct reb_simulation* const r);
-/** @endcond */
-
 #ifdef MPI
 void reb_mpi_init(struct reb_simulation* const r);
 void reb_mpi_finalize(struct reb_simulation* const r);
@@ -746,21 +700,6 @@ void reb_mpi_finalize(struct reb_simulation* const r);
 // Wrapper method to set number of OpenMP threads from python.
 void reb_omp_set_num_threads(int num_threads);
 #endif // OPENMP
-
-/**
- * @cond PRIVATE
- */
-
-/**
- * @brief Function used to allow binary input.
- */
-void reb_reset_temporary_pointers(struct reb_simulation* const r);
-/**
- * @brief Function used to allow binary input.
- * @return Returns 1 if one ore more function pointers were not NULL before.
- */
-int reb_reset_function_pointers(struct reb_simulation* const r);
-/** @endcond */
 
 
 
