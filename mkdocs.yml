@@ -3,19 +3,24 @@ repo_url: https://github.com/hannorein/rebound
 repo_name: hannorein/rebound
 edit_uri: ""
 nav:
-  - "Home": index.md
-  - "Getting started":
+  - "Home": 
+    - index.md
     - quickstart.md
     - c_compile.md
-    - simulationstructure.md
-    - particles.md
+  - "Simulation":
+    - simulation.md
+    - simulationvariables.md
+    - simulationbinaryfiles.md
+    - simulationdiagnostics.md
+    - simulationreferenceframes.md
+  - particles.md
   - "Modules":
     - modules.md
     - integrators.md
     - collisions.md
     - boundaryconditions.md
     - gravity.md
-  - 'Concepts':
+  - 'Other concepts':
     - units.md
     - orbitalelements.md
     - c_randomsamplingfunctions.md
