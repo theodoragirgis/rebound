@@ -1,11 +1,11 @@
 # Life cycle
 
-Thiese pages describe the C structure `reb_simulation` and the python class `rebound.Simulation`.
+These pages describe the C structure `reb_simulation` and the python class `rebound.Simulation`.
+Because the python class is an abstraction of the C structure, we describe their common features in one place.
+We will refer to both the C structure and the python object interchangeably as the *simulation structure* and *simulation object*.
 The simulation structure contains all the configuration, status and particle data of one REBOUND simulation.
 It's the one structure you will work with most when using REBOUND.
 
-Because the python class is an abstraction of the C structure, we describe their common features in one document.
-We will refer to both the C structure and the python object interchangeably as the *simulation structure* and *simulation object*.
 
 
 === "C"
