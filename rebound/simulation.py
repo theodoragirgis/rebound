@@ -288,7 +288,7 @@ class reb_simulation_integrator_whfast(Structure):
                 ("_p_temp", POINTER(Particle)),
                 ("is_synchronized", c_uint),
                 ("_allocatedN", c_uint),
-                ("_allocatedNtemp", c_uint),
+                ("_allocatedNtmp", c_uint),
                 ("_timestep_warning", c_uint),
                 ("_recalculate_coordinates_but_not_synchronized_warning", c_uint)]
 
