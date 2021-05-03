@@ -923,19 +923,11 @@ void reb_output_velocity_dispersion(struct reb_simulation* r, char* filename);
 // Input functions
 struct reb_simulation* reb_create_simulation_from_binary(char* filename);
 
-
-/**
- * @brief Returns f modulo 2 pi. Return value is in the range [0, 2pi)
- */
+// Miscellaneous functions
 double reb_tools_mod2pi(double f);
-
-/**
- * @brief returns the true anomaly for a given eccentricity and mean anomaly
- * @param e Eccentricity
- * @param M Mean anomaly
- * @return True anomaly
- */
-double reb_tools_M_to_f(double e, double M);
+double reb_tools_M_to_f(double e, double M); // True anomaly for a given eccentricity and mean anomaly
+double reb_tools_E_to_f(double e, double M); // True anomaly for a given eccentricity and eccentric anomaly
+double reb_tools_M_to_E(double e, double M); // Eccentric anomaly for a given eccentricity and mean anomaly
 
 // Functions to add and initialize particles
 void reb_add(struct reb_simulation* const r, struct reb_particle pt);

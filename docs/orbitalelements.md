@@ -36,3 +36,42 @@ Variable name   | Description
 !!! Important
     All angles in REBOUND are in radians. 
     Variables which have length, time or velocity units use code units.
+
+## Conversion functions
+### True anomaly
+
+The following function returns the true anomaly $f$ for a given eccentricity $e$ and mean anomaly $M$:
+=== "C"
+    ```c
+    double f = reb_tools_M_to_f(0.1, 1.); // e=0.1, M=1.0
+    ```
+
+=== "Python"
+    ```python
+    f = rebound.M_to_f(0.1, 1.0) # e=0.1, M=1.0
+    ```
+
+
+The following function returns the true anomaly $f$ for a given eccentricity $e$ and eccentric anomaly $E$:
+=== "C"
+    ```c
+    double f = reb_tools_E_to_f(0.1, 1.); // e=0.1, E=1.0
+    ```
+
+=== "Python"
+    ```python
+    f = rebound.E_to_f(0.1, 1.0) # e=0.1, E=1.0
+    ```
+
+### Eccentric anomaly
+
+The following function returns the eccentric anomaly $E$ for a given eccentricity $e$ and mean anomaly $M$:
+=== "C"
+    ```c
+    double f = reb_tools_M_to_E(0.1, 1.); // e=0.1, M=1.0
+    ```
+
+=== "Python"
+    ```python
+    f = rebound.M_to_E(0.1, 1.0) # e=0.1, M=1.0
+    ```

@@ -1,5 +1,5 @@
 from ctypes import Structure, c_double, POINTER, c_uint32, c_float, c_int, c_uint, c_uint32, c_int64, c_long, c_ulong, c_ulonglong, c_void_p, c_char_p, CFUNCTYPE, byref, create_string_buffer, addressof, pointer, cast
-from . import clibrebound, Escape, NoParticles, Encounter, Collision, SimulationError, ParticleNotFound
+from . import clibrebound, Escape, NoParticles, Encounter, Collision, SimulationError, ParticleNotFound, M_to_E
 from .citations import cite
 from .particle import Particle
 from .units import units_convert_particle, check_units, convert_G, hash_to_unit
@@ -430,8 +430,7 @@ class Orbit(Structure):
     
     @property 
     def E(self):
-        clibrebound.reb_tools_M_to_E.restype = c_double
-        return clibrebound.reb_tools_M_to_E(c_double(self.e), c_double(self.M))
+        return M_to_E(self.e, self.M)
 
 class Simulation(Structure):
     """
