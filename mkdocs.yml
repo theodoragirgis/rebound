@@ -13,10 +13,12 @@ nav:
     - simulationbinaryfiles.md
     - simulationdiagnostics.md
     - simulationreferenceframes.md
+    - simulationoperators.md
   - "Particles":
     - particles.md
     - addingparticles.md
     - removingparticles.md
+    - particleoperators.md
   - "Modules":
     - modules.md
     - integrators.md

@@ -656,14 +656,8 @@ struct reb_orbit {
 struct reb_simulation* reb_create_simulation(void);     // allocates memory, then calls reb_init_simulation
 void reb_init_simulation(struct reb_simulation* r);    
 void reb_free_simulation(struct reb_simulation* const r);
-
-/**
- * @brief Creates a deep copy of a REBOUND simulation
- * @details All simulation data, including all particle data will be copied. Function pointers
- * need to be set manually afterwards. 
- * Working on the copy will not affect the original simulation.
- */
 struct reb_simulation* reb_copy_simulation(struct reb_simulation* r);
+
 
 /**
  * @brief Compares to REBOUND simulations bit by bit.
@@ -779,13 +773,6 @@ int reb_reset_function_pointers(struct reb_simulation* const r);
 */
 struct reb_particle* reb_get_particle_by_hash(struct reb_simulation* const r, uint32_t hash);
 
-/**
- * @brief Run the heartbeat function and check for escaping/colliding particles.
- * @details You rarely want to call this function yourself. It is used internally to 
- * call the function you set to the heartbeat variable in reb_simulation.
- * @param r The rebound simulation to be considered
- */
-void reb_run_heartbeat(struct reb_simulation* const r);
 
 
 // Mercurius switching functions
@@ -900,6 +887,8 @@ double reb_tools_mod2pi(double f);
 double reb_tools_M_to_f(double e, double M); // True anomaly for a given eccentricity and mean anomaly
 double reb_tools_E_to_f(double e, double M); // True anomaly for a given eccentricity and eccentric anomaly
 double reb_tools_M_to_E(double e, double M); // Eccentric anomaly for a given eccentricity and mean anomaly
+void reb_tools_init_plummer(struct reb_simulation* r, int _N, double M, double R); // This function sets up a Plummer sphere, N=number of particles, M=total mass, R=characteristic radius
+void reb_run_heartbeat(struct reb_simulation* const r);  // used internally
 
 // Functions to add and initialize particles
 void reb_add(struct reb_simulation* const r, struct reb_particle pt);
@@ -934,8 +923,6 @@ enum reb_input_binary_messages {
     REB_INPUT_BINARY_WARNING_CORRUPTFILE = 512,
 };
 
-// This function sets up a Plummer sphere, N=number of particles, M=total mass, R=characteristic radius
-void reb_tools_init_plummer(struct reb_simulation* r, int _N, double M, double R);
 
 /**
  * @brief This function calculates the first/second derivative of a Keplerian orbit. 
