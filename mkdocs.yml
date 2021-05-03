@@ -10,6 +10,7 @@ nav:
   - "Simulation":
     - simulation.md
     - simulationvariables.md
+    - simulationtimestepping.md
     - simulationbinaryfiles.md
     - simulationdiagnostics.md
     - simulationreferenceframes.md
@@ -31,7 +32,6 @@ nav:
     - simulationarchive.md
     - c_randomsamplingfunctions.md
     - c_outputfunctions.md
-    - manipulations.md
     - miscellaneous.md
   - "Examples":
     - examples.md
