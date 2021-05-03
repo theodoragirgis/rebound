@@ -1,7 +1,7 @@
 # Adding particles
 Once you've created a [simulation object](simulationstructure.md), you can add particles to it. 
 REBOUND supports several different ways to do that. 
-Also check out the [discussion on manipulating particles](manipulatingparticles.md).
+Also check out the [discussion on manipulating particles](manipulations.md).
 
 ## Particle structure
 A particle is represented by the `reb_particle` structure in C.

@@ -20,7 +20,7 @@ nav:
     - orbitalelements.md
     - c_randomsamplingfunctions.md
     - c_outputfunctions.md
-    - manipulatingparticles.md
+    - manipulations.md
   - "Examples":
     - examples.md
     - "Planetary systems":

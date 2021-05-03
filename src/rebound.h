@@ -868,28 +868,6 @@ double reb_random_normal(struct reb_simulation* r, double variance);
 double reb_random_rayleigh(struct reb_simulation* r, double sigma);
 
 /**
- * @brief Move to the heliocentric frame.
- * @details This function moves all particles to the heliocentric 
- * frame. Note that the simulation will not stay in the heliocentric frame
- * as it is not an inertial frame. Variational particles are not affected
- * by the function.
- * @param r The rebound simulation to be considered
- */
-void reb_move_to_hel(struct reb_simulation* const r);
-
-/**
- * @brief Move to center of momentum and center of mass frame.
- * @details This function moves all particles to the center of mass 
- * frame (sometimes also called center of momentum frame). In this frame
- * the center of mass is at rest.
- * It is recommended to call this function before you are doing a long
- * term orbit integration. If the particles are slowly drifting away from the
- * coordinate origin, numerical errors might build up.
- * @param r The rebound simulation to be considered
- */
-void reb_move_to_com(struct reb_simulation* const r);
-
-/**
  * @brief Returns the center of mass.
  * @param r The rebound simulation to be considered
  * @return The center of mass as a particle (mass, position and velocity correspond to the center of mass)
@@ -1197,6 +1175,8 @@ double reb_particle_distance(struct reb_particle* p1, struct reb_particle* p2);
 void reb_simulation_imul(struct reb_simulation* r, double scalar_pos, double scalar_vel);
 int reb_simulation_iadd(struct reb_simulation* r, struct reb_simulation* r2);
 int reb_simulation_isub(struct reb_simulation* r, struct reb_simulation* r2);
+void reb_move_to_hel(struct reb_simulation* const r);
+void reb_move_to_com(struct reb_simulation* const r);
 
 
 /**
