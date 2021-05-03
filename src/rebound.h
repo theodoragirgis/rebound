@@ -868,21 +868,6 @@ double reb_random_normal(struct reb_simulation* r, double variance);
 double reb_random_rayleigh(struct reb_simulation* r, double sigma);
 
 /**
- * @brief Returns the center of mass.
- * @param r The rebound simulation to be considered
- * @return The center of mass as a particle (mass, position and velocity correspond to the center of mass)
- */
-struct reb_particle reb_get_com(struct reb_simulation* r);
-
-/**
- * @brief Returns the center of mass of two particles
- * @param p1 One of the two particles
- * @param p2 One of the two particles
- * @return The center of mass as a particle (mass, position and velocity correspond to the center of mass)
- */
-struct reb_particle reb_get_com_of_pair(struct reb_particle p1, struct reb_particle p2);
-
-/**
  * @brief Sets arrays to particle data. 
  * @details This function can be used to quickly access particle data in a serialized form.
  * NULL pointers will not be set.
@@ -1178,6 +1163,13 @@ int reb_simulation_isub(struct reb_simulation* r, struct reb_simulation* r2);
 void reb_move_to_hel(struct reb_simulation* const r);
 void reb_move_to_com(struct reb_simulation* const r);
 
+// Diangnostic functions
+double reb_tools_energy(const struct reb_simulation* const r);
+struct reb_vec3d reb_tools_angular_momentum(const struct reb_simulation* const r);
+struct reb_particle reb_get_com(struct reb_simulation* r);
+struct reb_particle reb_get_com_of_pair(struct reb_particle p1, struct reb_particle p2);
+
+
 
 /**
  * @defgroup SimulationArchiveFunctions Simulation Archive functions
@@ -1264,122 +1256,29 @@ void reb_free_simulationarchive_pointers(struct reb_simulationarchive* sa);
 
 /** @endcond */
 
-/** @} */
+// Functions to between coordinate systems
 
-/**
- * @defgroup TransformationFunctions Coordinate transformations
- * Functions for transforming between various coordinate systems.
- * @{
- */
-
-/**
- * \name Functions to obtain various masses needed in Jacobi coordinates.
- * @{
- */
-/**
- * \name From inertial to Jacobi coordinates
- * @{
- * @details Different functions allow you to calculate subsets of the positions (pos), velocities(vel),
- *          and accelerations (acc) depending on what's needed.
- * @param ps Particles array with the inertial quantities to convert
- * @param p_j Particles array in which the Jacobi quantities will be stored.
- * @param p_mass Should be the same particles array as ps for real particles. If passing variational
- * particles in ps, p_mass should be the corresponding array of real particles.
- * @param N number of particles in the array.
- * @param N_active number of active particles in the array.
- */
-
+// Jacobi
+// p_mass: Should be the same particles array as ps for real particles. If passing variational
+//         particles in ps, p_mass should be the corresponding array of real particles.
 void reb_transformations_inertial_to_jacobi_posvel(const struct reb_particle* const particles, struct reb_particle* const p_j, const struct reb_particle* const p_mass, const unsigned int N, const int N_active);
 void reb_transformations_inertial_to_jacobi_posvelacc(const struct reb_particle* const particles, struct reb_particle* const p_j, const struct reb_particle* const p_mass, const unsigned int N, const int N_active);
 void reb_transformations_inertial_to_jacobi_acc(const struct reb_particle* const particles, struct reb_particle* const p_j,const struct reb_particle* const p_mass, const unsigned int N, const int N_active);
-/** @} */
-/**
- * \name From Jacobi to inertial coordinates
- * @{
- * @details Different functions allow you to calculate subsets of the positions (pos), velocities(vel),
- *          and accelerations (acc) depending on what's needed.
- * @param ps Particles array with the inertial quantities to convert
- * @param p_j Particles array in which the Jacobi quantities will be stored.
- * @param p_mass Should be the same particles array as ps for real particles. If passing variational
- * particles in ps, p_mass should be the corresponding array of real particles.
- * @param N number of particles in the array.
- * @param N_active number of active particles in the array.
- */
 void reb_transformations_jacobi_to_inertial_posvel(struct reb_particle* const particles, const struct reb_particle* const p_j, const struct reb_particle* const p_mass, const unsigned int N, const int N_active);
 void reb_transformations_jacobi_to_inertial_pos(struct reb_particle* const particles, const struct reb_particle* const p_j, const struct reb_particle* const p_mass, const unsigned int N, const int N_active);
 void reb_transformations_jacobi_to_inertial_acc(struct reb_particle* const particles, const struct reb_particle* const p_j, const struct reb_particle* const p_mass, const unsigned int N, const int N_active);
-/** @} */
-/**
- * \name From inertial to democratic heliocentric coordinates
- * @{
- * @details Different functions allow you to calculate subsets of the positions (pos), velocities(vel),
- *          and accelerations (acc) depending on what's needed.
- * @param ps Particles array with the inertial quantities to convert
- * @param p_h Particles array in which the democratic heliocentric quantities will be stored.
- * @param N number of particles in the array.
- * @param N_active number of active particles in the array.
- */
+
+// Democratic heliocentric coordinates
 void reb_transformations_inertial_to_democraticheliocentric_posvel(const struct reb_particle* const particles, struct reb_particle* const p_h, const unsigned int N, const int N_active);
-/** @} */
-/**
- * \name From democratic heliocentric to inertial coordinates
- * @{
- * @details Different functions allow you to calculate subsets of the positions (pos), velocities(vel),
- *          and accelerations (acc) depending on what's needed.
- * @param ps Particles array with the inertial quantities to convert
- * @param p_h Particles array in which the democratic heliocentric quantities will be stored.
- * @param N number of particles in the array.
- * @param N_active number of active particles in the array.
- */
 void reb_transformations_democraticheliocentric_to_inertial_pos(struct reb_particle* const particles, const struct reb_particle* const p_h, const unsigned int N, const int N_active);
 void reb_transformations_democraticheliocentric_to_inertial_posvel(struct reb_particle* const particles, const struct reb_particle* const p_h, const unsigned int N, const int N_active);
-/** @} */
-/**
- * \name From inertial to WHDS coordinates
- * @{
- * @details Different functions allow you to calculate subsets of the positions (pos), velocities(vel),
- *          and accelerations (acc) depending on what's needed.
- * @param ps Particles array with the inertial quantities to convert
- * @param p_h Particles array in which the WHDS quantities will be stored.
- * @param N number of particles in the array.
- * @param N_active number of active particles in the array.
- */
+
+// WHDS
 void reb_transformations_inertial_to_whds_posvel(const struct reb_particle* const particles, struct reb_particle* const p_h, const unsigned int N, const int N_active);
-/** @} */
-/**
- * \name From WHDS to inertial coordinates
- * @{
- * @details Different functions allow you to calculate subsets of the positions (pos), velocities(vel),
- *          and accelerations (acc) depending on what's needed.
- * @param ps Particles array with the inertial quantities to convert
- * @param p_h Particles array in which the WHDS quantities will be stored.
- * @param N number of particles in the array.
- * @param N_active number of active particles in the array.
- */
 void reb_transformations_whds_to_inertial_pos(struct reb_particle* const particles, const struct reb_particle* const p_h, const unsigned int N, const int N_active);
 void reb_transformations_whds_to_inertial_posvel(struct reb_particle* const particles, const struct reb_particle* const p_h, const unsigned int N, const int N_active);
-/** @} */
-/** @} */
 
-/**
- * @defgroup MiscRebFunctions Miscellaneous functions
- * List of the miscellaneous helper functions for REBOUND
- * @{
- */
-/**
- * @brief Calculate the total energy (potential and kinetic).
- * @details Does not work for SEI (shearing sheet simulations). 
- * @param r The rebound simulation to be considered.
- * @return Total energy. 
- */
-double reb_tools_energy(const struct reb_simulation* const r);
 
-/**
- * @brief Calculate the system's angular momentum.
- * @param r The rebound simulation to be considered.
- * @return The angular momentum vector as a reb_vec3d struct.
- */
-struct reb_vec3d reb_tools_angular_momentum(const struct reb_simulation* const r);
 
 /**
  * @brief Add and initialize a set of first order variational particles
@@ -1493,12 +1392,8 @@ int reb_integrator_whfast_init(struct reb_simulation* const r);    ///< Internal
  */
 void reb_update_acceleration(struct reb_simulation* r);
 
-/** @endcond */
 
-/**
-* @cond PRIVATE
-* Related to OpenGL/WebGL visualization. Nothing to be changed by the user.
-*/
+// The following stuctures are related to OpenGL/WebGL visualization. Nothing to be changed by the user.
 struct reb_quaternion {
     double x, y, z, w;
 };
@@ -1566,8 +1461,5 @@ struct reb_display_data {
     unsigned int orbit_shader_particle_vao;
     unsigned int orbit_shader_vertex_count;
 };
-/**
- * @endcond
- */
 
 #endif // _MAIN_H

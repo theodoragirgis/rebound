@@ -81,7 +81,6 @@ Examples of how to work with the SimulationArchive are provided in an [iPython](
 
 
 
-
 ## Variables
 The following example shows how to access variables in the simulation structure.  
 === "C"
@@ -397,4 +396,95 @@ They are described on their own [separate page](integrators.md).
 
 
 
+## Diagnostics 
+
+### Energy
+You can calculate the total energy (kinetic plus potential energy) of a simulation using the following function:
+
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    double energy = reb_calculate_energy(r);
+    ```
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    energy = sim.calculate_energy()
+    ```
+
+### Angular momentum
+You can calculate the angular momentum of a simulation using the following function:
+
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    double energy = reb_calculate_angular_momentum(r);
+    ```
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    Lx, Ly, Lz = sim.calculate_angular_momentum()
+    ```
+
+### Center-of-mass
+You can calculate the center-of-mass of a simulation using the following function:
+
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    struct reb_particle com = reb_get_com(r);
+    ```
+=== "Python"
+    ```python
+    sim = rebound.Simulation()
+    com = sim.calculate_com()
+    ```
+The function returns a particle object with mass, position, and velocity reflecting those of the center-of-mass.
+
+## Moving reference frames
+Compared to other N-body codes, REBOUND does not use a predifined coordinate system. 
+It works in any intertial frame.
+This makes setting up simulations and interpreting outputs more intuitive. 
+However, one often wants to move to a specific coordinate system.
+REBOUND has several built-in functions to do that.
+
+### Heliocentric frame
+Here is how you can move the simulation to the heliocentric frame.
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    // ... setup simulation ...
+    reb_move_to_hel(r);
+    ```
+=== "Python"
+    ```python
+    r = rebound.Simulation()
+    # ... setup simulation ...
+    r.move_to_hel()
+    ```
+This moves all particles in the simulation by the same amount so that afterwards, the particle with index 0 is located at the origin. 
+Note that as the integration progresses, it is not guaranteed that the particle with index 0 remains at the origin. 
+Most likely, it will drift away from the origin. 
+Therefore, if you require outputs in the heliocentric frame, call `move_to_hel` before you create an output. 
+Variational equations are not affected by this operation.
+
+### Center-of-mass frame
+You can also move a simulation to the center-of-mass frame, the inertial frame where the center-of-mass is at the origin. 
+=== "C"
+    ```c
+    struct reb_simulation* r = reb_create_simulation();
+    // ... setup simulation ...
+    reb_move_to_com(r);
+    ```
+=== "Python"
+    ```python
+    r = rebound.Simulation()
+    # ... setup simulation ...
+    r.move_to_com()
+    ```
+!!! Important
+    If you are not in the center-of-mass frame, the center-of-mass will and all the particles will slowly drift away from the origin. 
+    This has important consequences for long-term intergrations. 
+    If the particles are far away from the origin, you might increase the numerical errors due to finite floating point precision. 
+    By moving to the center-of-mass frame after setting up all the particles, you avoid these issues.
 
