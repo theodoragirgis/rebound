@@ -21,7 +21,7 @@ Then, initialize the variational particles and MEGNO variables with
 REBOUND uses random numbers to initialize the variational particles.
 The initial seed is chosen based on the current time and the process id. 
 This ensures the seed if different every time you run the simulation.
-See the discussion on [random sampling](randomsampling.md) for more details.
+See the discussion on [random sampling](c_randomsamplingfunctions.md) for more details.
 
 If you want to have reproducible result, you can specify the seed manually:
 === "C"

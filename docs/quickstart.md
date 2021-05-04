@@ -141,5 +141,12 @@ into a terminal window while you're in the `examples/simplest/` directory. Then 
 ```
 
 ## Where to go from here
-To learn more about how to use REBOUND with C, have a look at the examples in the `examples/` directory. You might also want to have a look at the `rebound.h` file in the `src/` directory which contains the API specifications. Last but not least, REBOUND is open source. If you want to know how something works, you can just look at the source code. And of course, you are welcome to [open an issue](https://github.com/hannorein/rebound/issues) on Github or e-mail any of the [contributors](/#contributors) with questions. We'll do our best to answer them quickly.
+In addition to reading the remaining sections in the documentation, you can learn most about REBOUND by looking at some of the [example problems](examples.md). 
+The C examples are located in the `examples/` directory. 
+The python and iPython examples are located in the `python_examples/` and `ipython_examples/` directories respectively. 
+
+You might also want to have a look at the `rebound.h` file in the `src/` directory which contains the precise function prototypes and structure definitions.
+
+If you run into a problem or can't find an answer in this documentation, [open an issue](https://github.com/hannorein/rebound/issues) on Github or e-mail one of the [contributors](/#contributors). 
+We'll do our best to help you quickly.
 

@@ -60,7 +60,9 @@ There are several papers describing the functionality of REBOUND.
 
 ## Acknowledgments
 
-If you use this code or parts of this code for results presented in a scientific publication, please send us a copy of your paper so that we can keep track of all publications that made use of the code. We would greatly appreciate a citation as well. The simplest way to find the citations relevant to the specific setup of your REBOUND simulation is: 
+If you use this code or parts of this code for results presented in a scientific publication, we would greatly appreciate a citation.
+please cite REBOUND.
+The simplest way to find the citations relevant to the specific setup of your REBOUND simulation is: 
 
 ```python
 sim = rebound.Simulation()
@@ -68,6 +70,8 @@ sim = rebound.Simulation()
 sim.cite()
 ```
 
+!!! Info
+    When you cite one of the REBOUND papers, your paper will receive an automatic shout-out from the [REBOUND Citation Bot](https://twitter.com/reboundbot). 
 
 ## License
 
