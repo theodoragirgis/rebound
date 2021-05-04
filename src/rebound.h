@@ -471,11 +471,11 @@ struct reb_simulation {
     uint32_t python_unit_t;         // Only used for when working with units in python.
     
     // Ghost boxes 
-    struct  reb_vec3d boxsize;  // Size of the entire box, root_x*boxsize. 
-    double  boxsize_max;        // Maximum size of the entire box in any direction. Set in box_init().
-    double  root_size;      // Size of a root box. 
-    int     root_n;         // Total number of root boxes in all directions, root_nx*root_ny*root_nz. Default: 1. Set in box_init().
-    int     root_nx;        // Do not change manually.
+    struct  reb_vec3d boxsize;      // Size of the entire box, root_x*boxsize. 
+    double  boxsize_max;            // Maximum size of the entire box in any direction. Set in box_init().
+    double  root_size;              // Size of a root box. 
+    int     root_n;                 // Total number of root boxes in all directions, root_nx*root_ny*root_nz. Default: 1. Set in box_init().
+    int     root_nx;                // Number of ghost boxes in x direction. Do not change manually.
     int     root_ny;
     int     root_nz;
     int     nghostx;
@@ -627,6 +627,11 @@ int reb_reset_function_pointers(struct reb_simulation* const r); // Returns 1 if
 // Configure the boundary/root box
 void reb_configure_box(struct reb_simulation* const r, const double boxsize, const int root_nx, const int root_ny, const int root_nz);
 
+// Messages and control functions
+void reb_exit(const char* const msg); // Print out an error message, then exit in a semi-nice way.
+void reb_warning(struct reb_simulation* const r, const char* const msg);   // Print or store a warning message, then continue.
+void reb_error(struct reb_simulation* const r, const char* const msg);     // Print or store an error message, then continue.
+int reb_get_next_message(struct reb_simulation* const r, char* const buf); // Get the next stored warning message. Used only if save_messages==1. Return value is 0 if no messages are present, 1 otherwise.
 
 // Timestepping
 void reb_step(struct reb_simulation* const r);
@@ -656,48 +661,9 @@ double reb_random_powerlaw(struct reb_simulation* r, double min, double max, dou
 double reb_random_normal(struct reb_simulation* r, double variance);
 double reb_random_rayleigh(struct reb_simulation* r, double sigma);
 
-/**
- * @brief Sets arrays to particle data. 
- * @details This function can be used to quickly access particle data in a serialized form.
- * NULL pointers will not be set.
- * @param r The rebound simulation to be considered
- * @param hash 1D array to hold particle hashes
- * @param mass 1D array to hold particle masses
- * @param radius 1D array to hold particle radii
- * @param xyz 3D array to hold particle positions
- * @param vxvyvz 3D array to hold particle velocities
- * @param xyzvxvyvz 3D array to hold particle positions and velocities
-*/
-void reb_serialize_particle_data(struct reb_simulation* r, uint32_t* hash, double* m, double* radius, double (*xyz)[3], double (*vxvyvz)[3], double (*xyzvxvyvz)[6]);
-
-/**
- * @brief Sets particle data to data provided in arrays. 
- * @details This function can be used to quickly set particle data in a serialized form.
- * NULL pointers will not be accessed.
- * @param r The rebound simulation to be considered
- * @param hash 1D array to hold particle hashes
- * @param mass 1D array to hold particle masses
- * @param radius 1D array to hold particle radii
- * @param xyz 3D array to hold particle positions
- * @param vxvyvz 3D array to hold particle velocities
- * @param xyzvxvyvz 3D array to hold particle positions and velocities
-*/
-void reb_set_serialized_particle_data(struct reb_simulation* r, uint32_t* hash, double* m, double* radius, double (*xyz)[3], double (*vxvyvz)[3], double (*xyzvxvyvz)[6]);
-
-/**
- * @brief Returns a particle pointer's index in the simulation it's in.
- * @param p A pointer to the particle 
- * @return The integer index of the particle in its simulation (will return -1 if not found in the simulation).
- */
-int reb_get_particle_index(struct reb_particle* p);
-
-/**
- * @brief Returns the jacobi center of mass for a given particle
- * @param p A pointer to the particle
- * @return A reb_particle structure for the center of mass of all particles with lower index.  Returns particles[0] if passed the 0th particle.
- */
-
-struct reb_particle reb_get_jacobi_com(struct reb_particle* p);
+// Serialization functions.
+void reb_serialize_particle_data(struct reb_simulation* r, uint32_t* hash, double* m, double* radius, double (*xyz)[3], double (*vxvyvz)[3], double (*xyzvxvyvz)[6]); // NULL pointers will not be set.
+void reb_set_serialized_particle_data(struct reb_simulation* r, uint32_t* hash, double* m, double* radius, double (*xyz)[3], double (*vxvyvz)[3], double (*xyzvxvyvz)[6]); // Null pointers will be ignored.
 
 // Output functions
 int reb_output_check(struct reb_simulation* r, double interval);
@@ -717,6 +683,22 @@ int reb_binary_diff_with_options(char* buf1, size_t size1, char* buf2, size_t si
 
 // Input functions
 struct reb_simulation* reb_create_simulation_from_binary(char* filename);
+
+// Possible errors that might occur during binary file reading.
+enum reb_input_binary_messages {
+    REB_INPUT_BINARY_WARNING_NONE = 0,
+    REB_INPUT_BINARY_ERROR_NOFILE = 1,
+    REB_INPUT_BINARY_WARNING_VERSION = 2,
+    REB_INPUT_BINARY_WARNING_POINTERS = 4,
+    REB_INPUT_BINARY_WARNING_PARTICLES = 8,
+    REB_INPUT_BINARY_ERROR_FILENOTOPEN = 16,
+    REB_INPUT_BINARY_ERROR_OUTOFRANGE = 32,
+    REB_INPUT_BINARY_ERROR_SEEK = 64,
+    REB_INPUT_BINARY_WARNING_FIELD_UNKOWN = 128,
+    REB_INPUT_BINARY_ERROR_INTEGRATOR = 256,
+    REB_INPUT_BINARY_WARNING_CORRUPTFILE = 512,
+};
+
 
 // Miscellaneous functions
 uint32_t reb_hash(const char* str);
@@ -741,25 +723,12 @@ void reb_remove_all(struct reb_simulation* const r);
 int reb_remove(struct reb_simulation* const r, int index, int keepSorted);
 int reb_remove_by_hash(struct reb_simulation* const r, uint32_t hash, int keepSorted);
 struct reb_particle* reb_get_particle_by_hash(struct reb_simulation* const r, uint32_t hash);
+int reb_get_particle_index(struct reb_particle* p); // Returns a particle's index in the simulation it's in. Needs to be in the simulation its sim pointer is pointing to. Otherwise -1 returned.
+struct reb_particle reb_get_jacobi_com(struct reb_particle* p); // Returns the Jacobi center of mass for a given particle. Used by python. Particle needs to be in a simulation.
 
 // Orbit calculation
 struct reb_orbit reb_tools_particle_to_orbit_err(double G, struct reb_particle p, struct reb_particle primary, int* err);
 struct reb_orbit reb_tools_particle_to_orbit(double G, struct reb_particle p, struct reb_particle primary);
-
-// Possible errors that might occur during binary file reading.
-enum reb_input_binary_messages {
-    REB_INPUT_BINARY_WARNING_NONE = 0,
-    REB_INPUT_BINARY_ERROR_NOFILE = 1,
-    REB_INPUT_BINARY_WARNING_VERSION = 2,
-    REB_INPUT_BINARY_WARNING_POINTERS = 4,
-    REB_INPUT_BINARY_WARNING_PARTICLES = 8,
-    REB_INPUT_BINARY_ERROR_FILENOTOPEN = 16,
-    REB_INPUT_BINARY_ERROR_OUTOFRANGE = 32,
-    REB_INPUT_BINARY_ERROR_SEEK = 64,
-    REB_INPUT_BINARY_WARNING_FIELD_UNKOWN = 128,
-    REB_INPUT_BINARY_ERROR_INTEGRATOR = 256,
-    REB_INPUT_BINARY_WARNING_CORRUPTFILE = 512,
-};
 
 // Chaos indicators
 void reb_tools_megno_init(struct reb_simulation* const r);
@@ -800,24 +769,19 @@ int reb_add_var_1st_order(struct reb_simulation* const r, int testparticle);
 // Returns the index of the first variational particle added
 int reb_add_var_2nd_order(struct reb_simulation* const r, int testparticle, int index_1st_order_a, int index_1st_order_b);
 
-
-/**
- * @brief This function calculates the first/second derivative of a Keplerian orbit. 
- * @details Derivatives of Keplerian orbits are required for variational equations, in particular
- *          for optimization problems. 
- *          The derivative is calculated with respect to the variables that appear in the function name.
- *          One variable implies that a first derivative is returned, two variables implies that a second
- *          derivate is returned. Classical orbital parameters and those introduced by Pal (2009) are 
- *          supported. Pal coordinates have the advantage of being analytical (i.e. infinite differentiable).
- *          Classical orbital parameters may have singularities, for example when e is close to 0.
- *          Note that derivatives with respect to Cartesian coordinates are trivial and therefore not
- *          implemented as seperate functions. 
- *          The following variables are supported: a, e, inc, f, omega, Omega, h, k, ix, iy and m (mass). 
- * @return The derivative as a particle structre. Each structure element is a derivative.
- * @param G The gravitational constant
- * @param primary The primary of the Keplerian orbit
- * @param po The original particle for which the derivative is to be calculated.
- */
+// These functions calculates the first/second derivative of a Keplerian orbit. 
+//   Derivatives of Keplerian orbits are required for variational equations, in particular
+//   for optimization problems. 
+//   The derivative is calculated with respect to the variables that appear in the function name.
+//   One variable implies that a first derivative is returned, two variables implies that a second
+//   derivate is returned. Classical orbital parameters and those introduced by Pal (2009) are 
+//   supported. Pal coordinates have the advantage of being analytical (i.e. infinite differentiable).
+//   Classical orbital parameters may have singularities, for example when e is close to 0.
+//   Note that derivatives with respect to Cartesian coordinates are trivial and therefore not
+//   implemented as seperate functions. 
+//   The following variables are supported: a, e, inc, f, omega, Omega, h, k, ix, iy and m (mass). 
+// The functions return the derivative as a particle structre. Each structure element is a derivative.
+// The paramter po is the original particle for which the derivative is to be calculated.
 struct reb_particle reb_derivatives_lambda(double G, struct reb_particle primary, struct reb_particle po);
 struct reb_particle reb_derivatives_h(double G, struct reb_particle primary, struct reb_particle po);
 struct reb_particle reb_derivatives_k(double G, struct reb_particle primary, struct reb_particle po);
@@ -958,49 +922,6 @@ void reb_transformations_inertial_to_whds_posvel(const struct reb_particle* cons
 void reb_transformations_whds_to_inertial_pos(struct reb_particle* const particles, const struct reb_particle* const p_h, const unsigned int N, const int N_active);
 void reb_transformations_whds_to_inertial_posvel(struct reb_particle* const particles, const struct reb_particle* const p_h, const unsigned int N, const int N_active);
 
-
-
-/**
- * @brief Print out an error message, then exit in a semi-nice way.
- */
-void reb_exit(const char* const msg);
-
-/**
- * @brief Print or store a warning message, then continue.
- */
-void reb_warning(struct reb_simulation* const r, const char* const msg);
-
-/**
- * @brief Print or store an error message, then continue.
- */
-void reb_error(struct reb_simulation* const r, const char* const msg);
-
-/**
- * @brief Get the next warning message stored. Used only if save_messages==1.
- * @param r The rebound simulation to be considered
- * @param buf The buffer in which the error message it copied (needs to be at least reb_max_messages_length long).
- * @return Return value is 0 if no messages are present, 1 otherwise.
- */
-int reb_get_next_message(struct reb_simulation* const r, char* const buf);
-/** @} */
-/** @} */
-
-/**
- * @cond PRIVATE
- * Internal functions for calling various integrator steps. Nothing to be changed by the user.
- */
-
-void reb_integrator_whfast_from_inertial(struct reb_simulation* const r);   ///< Internal function to the appropriate WHFast coordinates from inertial
-void reb_integrator_whfast_to_inertial(struct reb_simulation* const r); ///< Internal function to move back from particular WHFast coordinates to inertial
-void reb_integrator_whfast_reset(struct reb_simulation* r);		///< Internal function used to call a specific integrator
-void reb_whfast_interaction_step(struct reb_simulation* const r, const double _dt);///< Internal function
-void reb_whfast_jump_step(const struct reb_simulation* const r, const double _dt); ///< Internal function
-void reb_whfast_kepler_step(const struct reb_simulation* const r, const double _dt); ///< Internal function
-void reb_whfast_com_step(const struct reb_simulation* const r, const double _dt); ///< Internal function
-void reb_integrator_ias15_part2(struct reb_simulation* r);              ///< Internal function used to call a specific integrator
-void reb_integrator_ias15_reset(struct reb_simulation* r);              ///< Internal function used to call a specific integrator
-int reb_integrator_whfast_init(struct reb_simulation* const r);    ///< Internal function to check errors and allocate memory if needed
-
 #ifdef MPI
 void reb_mpi_init(struct reb_simulation* const r);
 void reb_mpi_finalize(struct reb_simulation* const r);
@@ -1040,16 +961,16 @@ struct reb_display_data {
     double mouse_x;
     double mouse_y;
     double retina;
-    pthread_mutex_t mutex;          /**< Mutex to guarantee non-flickering */
-    int spheres;                    /**< Switches between point sprite and real spheres. */
-    int pause;                      /**< Pauses visualization, but keep simulation running */
-    int wire;                       /**< Shows/hides orbit wires. */
-    int onscreentext;               /**< Shows/hides onscreen text. */
-    int onscreenhelp;               /**< Shows/hides onscreen help. */
-    int multisample;                /**< Turn off/on multisampling. */
-    int clear;                      /**< Toggles clearing the display on each draw. */
-    int ghostboxes;                 /**< Shows/hides ghost boxes. */
-    int reference;                  /**< reb_particle used as a reference for centering. */
+    pthread_mutex_t mutex;          // Mutex to guarantee non-flickering
+    int spheres;                    // Switches between point sprite and real spheres.
+    int pause;                      // Pauses visualization, but keep simulation running
+    int wire;                       // Shows/hides orbit wires.
+    int onscreentext;               // Shows/hides onscreen text.
+    int onscreenhelp;               // Shows/hides onscreen help.
+    int multisample;                // Turn off/on multisampling.
+    int clear;                      // Toggles clearing the display on each draw.
+    int ghostboxes;                 // Shows/hides ghost boxes.
+    int reference;                  // reb_particle used as a reference for centering.
     unsigned int mouse_action;      
     unsigned int key_mods;      
     struct reb_quaternion view;
