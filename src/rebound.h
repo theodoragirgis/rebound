@@ -263,21 +263,19 @@ struct reb_collision{
     int ri;
 };
 
-/**
- * @brief Enumeration describing the return status of rebound_integrate
- */
+// Possible return values of of rebound_integrate
 enum REB_STATUS {
-    REB_RUNNING_PAUSED = -3,    ///< Simulation is paused by visualization.
-    REB_RUNNING_LAST_STEP = -2, ///< Current timestep is the last one. Needed to ensure that t=tmax exactly.
-    REB_RUNNING = -1,           ///< Simulation is current running, no error occurred.
-    REB_EXIT_SUCCESS = 0,       ///< Integration finished successfully.
-    REB_EXIT_ERROR = 1,         ///< A generic error occurred and the integration was not successful.
-    REB_EXIT_NOPARTICLES = 2,   ///< The integration ends early because no particles are left in the simulation.
-    REB_EXIT_ENCOUNTER = 3,     ///< The integration ends early because two particles had a close encounter (see exit_min_distance)
-    REB_EXIT_ESCAPE = 4,        ///< The integration ends early because a particle escaped (see exit_max_distance)  
-    REB_EXIT_USER = 5,          ///< User caused exit, simulation did not finish successfully.
-    REB_EXIT_SIGINT = 6,        ///< SIGINT received. Simulation stopped.
-    REB_EXIT_COLLISION = 7,     ///< The integration ends early because two particles collided. 
+    REB_RUNNING_PAUSED = -3,    // Simulation is paused by visualization.
+    REB_RUNNING_LAST_STEP = -2, // Current timestep is the last one. Needed to ensure that t=tmax exactly.
+    REB_RUNNING = -1,           // Simulation is current running, no error occurred.
+    REB_EXIT_SUCCESS = 0,       // Integration finished successfully.
+    REB_EXIT_ERROR = 1,         // A generic error occurred and the integration was not successful.
+    REB_EXIT_NOPARTICLES = 2,   // The integration ends early because no particles are left in the simulation.
+    REB_EXIT_ENCOUNTER = 3,     // The integration ends early because two particles had a close encounter (see exit_min_distance)
+    REB_EXIT_ESCAPE = 4,        // The integration ends early because a particle escaped (see exit_max_distance)  
+    REB_EXIT_USER = 5,          // User caused exit, simulation did not finish successfully.
+    REB_EXIT_SIGINT = 6,        // SIGINT received. Simulation stopped.
+    REB_EXIT_COLLISION = 7,     // The integration ends early because two particles collided. 
 };
 
 
@@ -292,22 +290,15 @@ enum REB_STATUS {
  * equations.
  */
 struct reb_variational_configuration{
-    struct reb_simulation* sim; ///< Reference to the simulation.
-    int order;                  ///< Order of the variational equation. 1 or 2. 
-    int index;                  ///< Index of the first variational particle in the particles array.
-    int testparticle;           ///< Is this variational configuration describe a test particle? -1 if not.
-    int index_1st_order_a;      ///< Used for 2nd order variational particles only: Index of the first order variational particle in the particles array.
-    int index_1st_order_b;      ///< Used for 2nd order variational particles only: Index of the first order variational particle in the particles array.
+    struct reb_simulation* sim; // Reference to the simulation.
+    int order;                  // Order of the variational equation. 1 or 2. 
+    int index;                  // Index of the first variational particle in the particles array.
+    int testparticle;           // Is this variational configuration describe a test particle? -1 if not.
+    int index_1st_order_a;      // Used for 2nd order variational particles only: Index of the first order variational particle in the particles array.
+    int index_1st_order_b;      // Used for 2nd order variational particles only: Index of the first order variational particle in the particles array.
 };
 
-/**
- * @cond PRIVATE
- * Internal data structures below. Nothing to be changed by the user.
- */
-
-/**
- * @brief Enumeration describing the contents of a binary field. Used to read and write binary files.
- */
+// IDs for content of a binary field. Used to read and write binary files.
 enum REB_BINARY_FIELD_TYPE {
     REB_BINARY_FIELD_TYPE_T = 0,
     REB_BINARY_FIELD_TYPE_G = 1,
@@ -440,25 +431,17 @@ enum REB_BINARY_FIELD_TYPE {
     REB_BINARY_FIELD_TYPE_END = 9999,
 };
 
- // This structure is used to save and load binary files.
+// This structure is used to save and load binary files.
 struct reb_binary_field {
     uint32_t type;  // enum of REB_BINARY_FIELD_TYPE
     uint64_t size;  // Size in bytes of field (only counting what follows, not the binary field, itself).
 };
 
-
-/**
- * @brief Holds a particle's hash and the particle's index in the particles array.
- * @details This structure is used for the simulation's particle_lookup_table.
- */
+// Holds a particle's hash and the particle's index in the particles array. Used for particle_lookup_table.
 struct reb_hash_pointer_pair{
     uint32_t hash;
     int index;
 };
-/**
- * @endcond
- */
-/** @} */
 
 // Main REBOUND Simulation structure
 struct reb_simulation {
@@ -660,6 +643,9 @@ struct reb_simulation* reb_copy_simulation(struct reb_simulation* r);
 void reb_free_pointers(struct reb_simulation* const r);
 void reb_reset_temporary_pointers(struct reb_simulation* const r);
 int reb_reset_function_pointers(struct reb_simulation* const r); // Returns 1 if one ore more function pointers were not NULL before.
+// Configure the boundary/root box
+void reb_configure_box(struct reb_simulation* const r, const double boxsize, const int root_nx, const int root_ny, const int root_nz);
+
 
 // Timestepping
 void reb_step(struct reb_simulation* const r);
@@ -667,39 +653,12 @@ void reb_steps(struct reb_simulation* const r, unsigned int N_steps);
 enum REB_STATUS reb_integrate(struct reb_simulation* const r, double tmax);
 void reb_integrator_synchronize(struct reb_simulation* r);
 void reb_integrator_reset(struct reb_simulation* r);
+void reb_update_acceleration(struct reb_simulation* r);
 
-/**
- * @brief Compares to REBOUND simulations bit by bit.
- * @return If r1 and r2 are exactly equal to each other then 0 is returned, otherwise 1. The walltime parameter in 
- * the REBOUND struct is ignored in this comparison.
- * @param r1 The first REBOUND simulation to be compared.
- * @param r2 The second REBOUND simulation to be compared.
- * @param output_option Is set to 1, then the output is printed on the screen. If set to 2, only the return value indicates if the simulations are different. 
- */
+// Compare simulations
+// If r1 and r2 are exactly equal to each other then 0 is returned, otherwise 1. Walltime is ignored.
+// If output_option=1, then output is printed on the screen. If 2, only return value os given. 
 int reb_diff_simulations(struct reb_simulation* r1, struct reb_simulation* r2, int output_option);
-
-/**
- * @brief Configure the boundary/root box
- * @details This function helps to setup the variables for the simulation box.
- * Call this function when using open, periodic or shear periodic boundary conditions.
- * @param r The rebound simulation to be considered
- * @param boxsize The size of the root box
- * @param root_nx The number of root boxes in the x direction.
- * @param root_ny The number of root boxes in the y direction.
- * @param root_nz The number of root boxes in the z direction.
- */
-void reb_configure_box(struct reb_simulation* const r, const double boxsize, const int root_nx, const int root_ny, const int root_nz);
-
-
-#ifdef MPI
-void reb_mpi_init(struct reb_simulation* const r);
-void reb_mpi_finalize(struct reb_simulation* const r);
-#endif // MPI
-
-#ifdef OPENMP
-// Wrapper method to set number of OpenMP threads from python.
-void reb_omp_set_num_threads(int num_threads);
-#endif // OPENMP
 
 // Mercurius switching functions
 double reb_integrator_mercurius_L_mercury(const struct reb_simulation* const r, double d, double dcrit);           
@@ -751,7 +710,6 @@ void reb_set_serialized_particle_data(struct reb_simulation* r, uint32_t* hash, 
  */
 int reb_get_particle_index(struct reb_particle* p);
 
-
 /**
  * @brief Returns the jacobi center of mass for a given particle
  * @param p A pointer to the particle
@@ -759,7 +717,6 @@ int reb_get_particle_index(struct reb_particle* p);
  */
 
 struct reb_particle reb_get_jacobi_com(struct reb_particle* p);
-/** @} */
 
 // Output functions
 int reb_output_check(struct reb_simulation* r, double interval);
@@ -781,6 +738,7 @@ int reb_binary_diff_with_options(char* buf1, size_t size1, char* buf2, size_t si
 struct reb_simulation* reb_create_simulation_from_binary(char* filename);
 
 // Miscellaneous functions
+uint32_t reb_hash(const char* str);
 double reb_tools_mod2pi(double f);
 double reb_tools_M_to_f(double e, double M); // True anomaly for a given eccentricity and mean anomaly
 double reb_tools_E_to_f(double e, double M); // True anomaly for a given eccentricity and eccentric anomaly
@@ -1033,13 +991,6 @@ double reb_tools_calculate_megno(struct reb_simulation* r);
 double reb_tools_calculate_lyapunov(struct reb_simulation* r);
 
 /**
- * @brief Returns hash for passed string.
- * @param str String key. 
- * @return hash for the passed string.
- */
-uint32_t reb_hash(const char* str);
-
-/**
  * @brief Returns a reb_particle structure with fields/hash/ptrs initialized to nan/0/NULL. 
  * @return reb_particle with fields initialized to nan.
  */
@@ -1086,13 +1037,15 @@ void reb_integrator_ias15_part2(struct reb_simulation* r);              ///< Int
 void reb_integrator_ias15_reset(struct reb_simulation* r);              ///< Internal function used to call a specific integrator
 int reb_integrator_whfast_init(struct reb_simulation* const r);    ///< Internal function to check errors and allocate memory if needed
 
-/** 
- * @brief This function updates the acceleration on all particles. 
- * @details It uses the current position and velocity data in the 
- * (struct reb_particle*) particles structure.
- */
-void reb_update_acceleration(struct reb_simulation* r);
+#ifdef MPI
+void reb_mpi_init(struct reb_simulation* const r);
+void reb_mpi_finalize(struct reb_simulation* const r);
+#endif // MPI
 
+#ifdef OPENMP
+// Wrapper method to set number of OpenMP threads from python.
+void reb_omp_set_num_threads(int num_threads);
+#endif // OPENMP
 
 // The following stuctures are related to OpenGL/WebGL visualization. Nothing to be changed by the user.
 struct reb_quaternion {

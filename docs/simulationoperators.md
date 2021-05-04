@@ -64,3 +64,30 @@ This can come in handy when rescaling a simulation
     ```
 In the above the position coordinates of all particles are multiplied by 2, all velocity coordinates are multiplied by 3.
 
+## Comparing simulations
+You can compare if simulations are equal to each other using the following syntax:
+=== "C"
+    ```c
+    struct reb_simulation* r1 = reb_create_simulation();
+    struct reb_simulation* r2 = reb_create_simulation();
+    // ... setup simulations ...
+    if (reb_diff_simulations(r1, r2, 2)){
+        // Simulations are NOT equal
+    }
+    ```
+    For debugging purposes, it can be useful to print out the differences. 
+    This is done by passing `1` as the last argument:
+    ```c
+    struct reb_simulation* r1 = reb_create_simulation();
+    struct reb_simulation* r2 = reb_create_simulation();
+    // ... setup simulations ...
+    reb_diff_simulations(r1, r2, 1); // prints out diferences
+    ```
+=== "Python"
+    ```python
+    r1 = rebound.Simulation()
+    r2 = rebound.Simulation()
+    # ... setup simulations ...
+    if r1 == 2:
+        print("Simulations are equal")
+    ```
