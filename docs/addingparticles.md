@@ -33,7 +33,7 @@ The following code shows an example on how to add particles this way:
 
 You can also use orbital parameters to initialize the particle object.
 === "C"
-    In C, this is done by calling the `reb_tools_orbit_to_particle` function. Its arguments are gravitational constant, primary object, mass, semi-major axis, eccentricity, inclination, longitude of ascending node, argyment of pericenter, and true anomaly. 
+    In C, this is done by calling the `reb_tools_orbit_to_particle` function. Its arguments are gravitational constant, primary object, mass, semi-major axis, eccentricity, inclination, longitude of ascending node, argument of pericenter, and true anomaly. 
     It returns an initialized particle object which you can then add to the simulation.
     ```c
     struct reb_simulation* r = reb_create_simulation();
@@ -108,9 +108,9 @@ By far the easiest way to add particles to REBOUND is to use a convenience funct
     --------- | -----------
     `m`|          mass  (default: 0)
     `x, y, z`|    positions in Cartesian coordinates  (default: 0)
-    `vx, vy, vz`| belocities in Cartesian coordinates (default: 0)
+    `vx, vy, vz`| velocities in Cartesian coordinates (default: 0)
     `primary`|    primary body for converting orbital elements to cartesian (default: center of mass of the particles in the passed simulation, i.e., this will yield Jacobi coordinates as one progressively adds particles) 
-    `a`|          semimajor axis (a or P required if passing orbital elements)
+    `a`|          semi-major axis (a or P required if passing orbital elements)
     `P`|          orbital period (a or P required if passing orbital elements)
     `e`|          eccentricity                (default: 0)
     `inc`|        inclination                 (default: 0)

@@ -40,7 +40,7 @@ The following code enables this module:
     ```
 
 !!! Important
-    This method checks for instantenous overlaps. It does this only after each timestep.
+    This method checks for instantaneous overlaps. It does this only after each timestep.
     This means that if the timestep is large enough for particles to pass completely through each other, then the collision will be missed. 
     
 
@@ -64,7 +64,7 @@ It assumes particles travelled along straight lines during the timestep and migh
 ### Tree
 This method uses an oct-tree to check for overlapping particles at the end of the timestep.
 When a large number of particles $N$ is used, this method scales as $O(N log(N))$, rather than $O(N^2)$ for the direct search.
-Note that you need to initialize the simulationbox whenever you want to use the tree.
+Note that you need to initialize the simulation box whenever you want to use the tree.
 Below is an example on how to enable the tree based collision search.
 
 === "C"
@@ -138,12 +138,12 @@ It can also be set manually using the following syntax:
 
 ### Hardsphere
 
-This assumes a hardsphere collision. 
+This assumes a hard-sphere collision. 
 This uses the `coefficient_of_restitution` parameter in `struct reb_simulation`. 
 It conserves momentum and mass.
 Depending on the coefficient of restitution, it also conserves energy.
 
-The following example shows how to set up a hardsphere collision resolve function and a direct collision detection routine.
+The following example shows how to set up a hard-sphere collision resolve function and a direct collision detection routine.
 
 === "C"
     ```c
@@ -168,7 +168,7 @@ This function merges the two colliding particles.
 It conserves mass, momentum and volume, but not energy.  
 The particle with the higher index will be removed. 
 
-The following example shows how to set up a hardsphere collision resolve function and a direct collision detection routine.
+The following example shows how to set up a hard-sphere collision resolve function and a direct collision detection routine.
 
 === "C"
     ```c

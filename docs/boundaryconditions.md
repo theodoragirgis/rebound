@@ -58,7 +58,7 @@ The syntax is as follows:
     ```
 
 Ghost boxes are supported for both periodic and shear-periodic boundary conditions.
-Ghost boxes can be used to allow particle collisions accross boundaries and include gravitational forces from outside the box boundaries. 
+Ghost boxes can be used to allow particle collisions across boundaries and include gravitational forces from outside the box boundaries. 
 This is particularly useful when simulating rings and disks. 
 The following code sets up two rings of ghost boxes in the x and y directions.
 
