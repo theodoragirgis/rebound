@@ -30,6 +30,7 @@ nav:
     - units.md
     - orbitalelements.md
     - simulationarchive.md
+    - chaos.md
     - c_randomsamplingfunctions.md
     - c_outputfunctions.md
     - miscellaneous.md

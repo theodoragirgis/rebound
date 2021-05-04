@@ -52,6 +52,7 @@ extern volatile sig_atomic_t reb_sigint;  ///< Graceful global interrupt handler
 struct reb_simulation;
 struct reb_display_data;
 struct reb_treecell;
+struct reb_variational_configuration;
 
 struct reb_particle {
     double x;
@@ -72,7 +73,7 @@ struct reb_particle {
     struct reb_simulation* sim; // Pointer to the parent simulation.
 };
 
-// Generic 3d vector, for internal use only.
+// Generic 3d vector
 struct reb_vec3d {
     double x;
     double y;
@@ -276,26 +277,6 @@ enum REB_STATUS {
     REB_EXIT_USER = 5,          // User caused exit, simulation did not finish successfully.
     REB_EXIT_SIGINT = 6,        // SIGINT received. Simulation stopped.
     REB_EXIT_COLLISION = 7,     // The integration ends early because two particles collided. 
-};
-
-
-/**
- * @brief Struct describing the properties of a set of variational equations.
- * @details One struct describes one or more sets of variational equations.
- * If testparticle is set to -1, then it is assumed that all particles are massive
- * and all particles influence all other particles. If testparticle is >=0 then 
- * the particle with that index is assumed to be a testparticle, i.e. it does not 
- * influence other particles. For second order variational equation, index_1st_order_a/b 
- * is the index in the particle array that corresponds to the 1st order variational 
- * equations.
- */
-struct reb_variational_configuration{
-    struct reb_simulation* sim; // Reference to the simulation.
-    int order;                  // Order of the variational equation. 1 or 2. 
-    int index;                  // Index of the first variational particle in the particles array.
-    int testparticle;           // Is this variational configuration describe a test particle? -1 if not.
-    int index_1st_order_a;      // Used for 2nd order variational particles only: Index of the first order variational particle in the particles array.
-    int index_1st_order_b;      // Used for 2nd order variational particles only: Index of the first order variational particle in the particles array.
 };
 
 // IDs for content of a binary field. Used to read and write binary files.
@@ -747,6 +728,7 @@ void reb_tools_init_plummer(struct reb_simulation* r, int _N, double M, double R
 void reb_run_heartbeat(struct reb_simulation* const r);  // used internally
 
 // Functions to add and initialize particles
+struct reb_particle reb_particle_nan(void); // Returns a reb_particle structure with fields/hash/ptrs initialized to nan/0/NULL. 
 void reb_add(struct reb_simulation* const r, struct reb_particle pt);
 void reb_add_fmt(struct reb_simulation* r, const char* fmt, ...);
 struct reb_particle reb_particle_new(struct reb_simulation* r, const char* fmt, ...);    // Same as reb_add_fmt() but returns the particle instead of adding it to the simualtion.
@@ -778,6 +760,45 @@ enum reb_input_binary_messages {
     REB_INPUT_BINARY_ERROR_INTEGRATOR = 256,
     REB_INPUT_BINARY_WARNING_CORRUPTFILE = 512,
 };
+
+// Chaos indicators
+void reb_tools_megno_init(struct reb_simulation* const r);
+void reb_tools_megno_init_seed(struct reb_simulation* const r, unsigned int seed);
+double reb_tools_calculate_megno(struct reb_simulation* r);
+double reb_tools_calculate_lyapunov(struct reb_simulation* r);
+
+// Variational equations
+
+// Struct describing the properties of a set of variational equations.
+// If testparticle is set to -1, then it is assumed that all particles are massive
+// and all particles influence all other particles. If testparticle is >=0 then 
+// the particle with that index is assumed to be a testparticle, i.e. it does not 
+// influence other particles. For second order variational equation, index_1st_order_a/b 
+// is the index in the particle array that corresponds to the 1st order variational 
+// equations.
+struct reb_variational_configuration{
+    struct reb_simulation* sim; // Reference to the simulation.
+    int order;                  // Order of the variational equation. 1 or 2. 
+    int index;                  // Index of the first variational particle in the particles array.
+    int testparticle;           // Is this variational configuration describe a test particle? -1 if not.
+    int index_1st_order_a;      // Used for 2nd order variational particles only: Index of the first order variational particle in the particles array.
+    int index_1st_order_b;      // Used for 2nd order variational particles only: Index of the first order variational particle in the particles array.
+};
+
+// Add and initialize a set of first order variational particles
+// If testparticle is >= 0, then only one variational particle (the test particle) will be added.
+// If testparticle is -1, one variational particle for each real particle will be added.
+// Returns the index of the first variational particle added
+int reb_add_var_1st_order(struct reb_simulation* const r, int testparticle);
+
+// Add and initialize a set of second order variational particles
+// Note: a set of second order variational particles requires two sets of first order variational equations.
+// If testparticle is >= 0, then only one variational particle (the test particle) will be added.
+// If testparticle is -1, one variational particle for each real particle will be added.
+// index_1st_order_a is the index of the corresponding first variational particles.
+// index_1st_order_b is the index of the corresponding first variational particles.
+// Returns the index of the first variational particle added
+int reb_add_var_2nd_order(struct reb_simulation* const r, int testparticle, int index_1st_order_a, int index_1st_order_b);
 
 
 /**
@@ -938,63 +959,6 @@ void reb_transformations_whds_to_inertial_pos(struct reb_particle* const particl
 void reb_transformations_whds_to_inertial_posvel(struct reb_particle* const particles, const struct reb_particle* const p_h, const unsigned int N, const int N_active);
 
 
-
-/**
- * @brief Add and initialize a set of first order variational particles
- * @param r The rebound simulation to be considered
- * @param testparticle This flag determines if the set of variational particles is for a testparticle or not.
- * If testparticle is >= 0, then only one variational particle (the test particle) will be added.
- * If testparticle is -1, one variational particle for each real particle will be added.
- * @return Returns the index of the first variational particle added
- **/
-int reb_add_var_1st_order(struct reb_simulation* const r, int testparticle);
-
-/**
- * @brief Add and initialize a set of second order variational particles
- * @details Note that a set of second order variational particles requires two sets of first order variational equations.
- * @param r The rebound simulation to be considered
- * @param testparticle This flag determines if the set of variational particles is for a testparticle or not.
- * If testparticle is >= 0, then only one variational particle (the test particle) will be added.
- * If testparticle is -1, one variational particle for each real particle will be added.
- * @param index_1st_order_a The index of the corresponding first variational particles.
- * @param index_1st_order_b The index of the corresponding first variational particles.
- * @return Returns the index of the first variational particle added
- **/
-int reb_add_var_2nd_order(struct reb_simulation* const r, int testparticle, int index_1st_order_a, int index_1st_order_b);
-
-/** 
- * @brief Init the MEGNO particles, enable MEGNO calculation
- * @param r The rebound simulation to be considered
- */
-void reb_tools_megno_init(struct reb_simulation* const r);
-
-/** 
- * @brief Init the MEGNO particles, enable MEGNO calculation, and specify a seed for the random number generation.
- * @param r The rebound simulation to be considered
- * @param seed The seed to use for the random number generator
- */
-void reb_tools_megno_init_seed(struct reb_simulation* const r, unsigned int seed);
-
-/**
- * @brief Get the current MEGNO value
- * @param r The rebound simulation to be considered
- * @return Returns the current value of the MEGNO
- */
-double reb_tools_calculate_megno(struct reb_simulation* r);
-
-/**
- * @brief Returns the largest Lyapunov characteristic number (LCN), or maximal Lyapunov exponent
- * @details MEGNO needs to be enabled to calculate this value.
- * @param r The rebound simulation to be considered
- * @return Returns the current CN
- */
-double reb_tools_calculate_lyapunov(struct reb_simulation* r);
-
-/**
- * @brief Returns a reb_particle structure with fields/hash/ptrs initialized to nan/0/NULL. 
- * @return reb_particle with fields initialized to nan.
- */
-struct reb_particle reb_particle_nan(void);
 
 /**
  * @brief Print out an error message, then exit in a semi-nice way.
