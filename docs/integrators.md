@@ -10,7 +10,7 @@ Each of the built-in integrators of REBOUND is described in this section.
 
 ## IAS15
 
-IAS15 stands for **I**ntegrator with **A**daptive **S**tep-size control, **15**th order. It is a very high order, non-symplectic integrator which can handle arbitrary forces (inluding those who are velocity dependent). 
+IAS15 stands for **I**ntegrator with **A**daptive **S**tep-size control, **15**th order. It is a very high order, non-symplectic integrator which can handle arbitrary forces (including those who are velocity dependent). 
 It is in most cases accurate down to machine precision (16 significant decimal digits). 
 The IAS15 implementation in REBOUND can integrate variational equations. 
 The algorithm is described in detail in [Rein & Spiegel 2015](https://ui.adsabs.harvard.edu/abs/2015MNRAS.446.1424R/abstract) and also in the original paper by [Everhart 1985](https://ui.adsabs.harvard.edu/abs/1985ASSL..115..185E/abstract). 
@@ -31,10 +31,10 @@ However, you can also set it explicitly:
     sim.integrator = "ias15"
     ```
 
-The setting for IAS15 are stored in the `reb_simulation_integrator_ias15` stucture. 
+The setting for IAS15 are stored in the `reb_simulation_integrator_ias15` structure. 
 
 `epsilon` (`double`)
-:   IAS15 is an adaptive integrator. It chooses its timesteps automatically. This parameter controls the accuracy of the integrator. The default value is $10^{-9}$. Setting this parameter to 0 turns off adaptive timestepping and a constant timestep will is used. Turning off adaptive timestepping is rarely useful. 
+:   IAS15 is an adaptive integrator. It chooses its timesteps automatically. This parameter controls the accuracy of the integrator. The default value is $10^{-9}$. Setting this parameter to 0 turns off adaptive timestepping and a constant timestep will is used. Turning off adaptive time-stepping is rarely useful. 
 
     !!! Important
         It is tempting to change `epsilon` to achieve a speedup at the loss of some accuracy. However, that makes rarely sense. The reason is that IAS15 is a very high (15th!) order integrator. Suppose we increasing the timestep by a factor of 10. This will increase the error by a factor of $10^{15}$. In other words, a simulation that previously was converged to machine precision will now have an error of order unity. 
@@ -123,7 +123,7 @@ The setting for WHFast are stored in the `reb_simulation_integrator_whfast` stru
         ```
     
     Note that the above code also turns off the safe mode. 
-    You most likely want to do that too (see below for a description of the safe mode).
+    Most likely, you want to do that too (see below for a description of the safe mode).
 
 `unsigned int corrector2`
 :   This variable turns on/off second symplectic correctors for WHFast. 
@@ -190,7 +190,7 @@ The setting for WHFast are stored in the `reb_simulation_integrator_whfast` stru
     After the timestep, the flag gets set back to 0. If you want to change particles after every timestep, you also need to set this flag to 1 before every timestep. Default is 0.
 
 `unsigned int safe_mode`
-:   If this flag is set (the default), whfast will recalculate the internal coordinates (Jacobi/heliocentric/WHDS) and synchronize every timestep, to avoid problems with outputs or particle modifications between timesteps. 
+:   If this flag is set (the default), WHFast will recalculate the internal coordinates (Jacobi/heliocentric/WHDS) and synchronize every timestep, to avoid problems with outputs or particle modifications between timesteps. 
     Setting it to 0 will result in a speedup, but care must be taken to synchronize and recalculate the internal coordinates when needed. See also the AdvWHFast.ipynb tutorial.
 
 `unsigned int keep_unsynchronized`
@@ -264,7 +264,7 @@ The `reb_simulation_integrator_mercurius` structure contains the configuration a
 :   Setting this flag to one will recalculate heliocentric coordinates from the particle structure at the beginning of the next timestep. After a single timestep, the flag gets set back to 0. If one changes a particles manually after a timestep, then one needs to set this flag to 1 before the next timestep.
 
 `unsigned int recalculate_dcrit_this_timestep`
-:   Setting this flag to one will recalculate the critical switchover distances dcrit at the beginning of the next timestep. After one timestep, the flag gets set back to 0. If you want to recalculate dcrit at every timestep, you also need to set this flag to 1 before every timestep.
+:   Setting this flag to one will recalculate the critical switchover distances dcrit at the beginning of the next timestep. After one timestep, the flag gets set back to 0. If you want to recalculate `dcrit` at every timestep, you also need to set this flag to 1 before every timestep.
 
 `unsigned int safe_mode`
 :   If this flag is set to 1 (the default), the integrator will recalculate heliocentric coordinates and synchronize after every timestep to avoid problems with outputs or particle modifications between timesteps. Setting this flag to 0 will result in a speedup, but care must be taken to synchronize and recalculate coordinates manually if needed.
@@ -286,7 +286,7 @@ All other members of this structure are only for internal use and should not be 
 SABA are symplectic integrators developed by [Laskar & Robutel 2001](https://ui.adsabs.harvard.edu/abs/2001CeMDA..80...39L/abstract) and [Blanes et al. 2013](https://ui.adsabs.harvard.edu/abs/2012arXiv1208.0689B/abstract). 
 The implementation in REBOUND supports SABA1, SABA2, SABA3, and SABA4 as well as the corrected versions SABAC1, SABAC2, SABAC3, and SABAC4. 
 Different correctors can be selected. 
-In addition the following methods with various generelized orders are supported: SABA(8,4,4), SABA(8,6,4), SABA(10,6,4). 
+In addition the following methods with various generalized orders are supported: SABA(8,4,4), SABA(8,6,4), SABA(10,6,4). 
 See [Rein, Tamayo & Brown 2019](https://ui.adsabs.harvard.edu/abs/2019MNRAS.489.4632R/abstract) for details on how these methods work.
 
 The `reb_simulation_integrator_saba` structure contains the configuration and data structures used by the SABA integrator family.

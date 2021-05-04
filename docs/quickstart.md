@@ -1,4 +1,4 @@
-# Quickstart guide
+# Quick-start guide
 
 You can call REBOUND from either C or Python. 
 Which programming language you want to use depends on your taste and your specific application. In short: 

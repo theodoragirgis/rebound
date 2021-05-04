@@ -14,7 +14,7 @@ The following example shows how to access variables in the simulation structure.
     print(sim.t)   # print current simulation time
     ```
 
-Below, we list the important variables in the simulation stucture. 
+Below, we list the important variables in the simulation structure. 
 To keep the documentation concise, variables which are only intended for internal use are not documented here. 
 
 ## Timestepping
@@ -69,7 +69,7 @@ To keep the documentation concise, variables which are only intended for interna
         ```
 
 `#!c double walltime`           
-:   Walltime in seconds used by REBOUND for this simulation.
+:   This variable keeps track of the wall-time (in seconds) used by REBOUND for this simulation.
     This is counting only the integration itself and not the visualization, heartbeat function, etc.
 
 `#!c void (*heartbeat) (struct reb_simulation* r)`
@@ -187,9 +187,9 @@ To keep the documentation concise, variables which are only intended for interna
 :   This is the number of active particles in the simulation.
     Only active particles contribute to the force in the gravity calculation.
     The default is -1 which means the number of active particles is equal to the number of particles, `N`. 
-    Particles with an index larger or equal than `N_active` are considered testparticles.
+    Particles with an index larger or equal than `N_active` are considered test-particles.
    
-    The following example sets up a simulation with two active particles and one massless test particle.
+    The following example sets up a simulation with two active particles and one massless test-particle.
     === "C"
         ```c
         struct reb_simulation* r = reb_create_simulation();
@@ -210,12 +210,12 @@ To keep the documentation concise, variables which are only intended for interna
 
 `#!c int testparticle_type`     
 :   This determines the type of the particles with `index >= N_active`. 
-    REBOUND supports two different test particle types:
+    REBOUND supports two different test-particle types:
 
     - If this variable is set to 0, then test particle does not influence any other particle (default).
-    - If this variable is set to 1, then active particles (those with `index < N_active`) feel testparticles (similar to MERCURY's small particles). 
+    - If this variable is set to 1, then active particles (those with `index < N_active`) feel test-particles (similar to MERCURY's small particles). 
 
-    Testparticles never feel each other.
+    Test-particles never feel each other.
 
 `#!c int N_var`                 
 :   Total number of variational particles. Default: 0.
@@ -249,11 +249,11 @@ To keep the documentation concise, variables which are only intended for interna
 :   This variable keeps track of momentum exchange during collisions. This can be used to calculate collisional viscosity in ring systems.
 
 `#!c long collisions_Nlog`      
-:   This variable keeps track of the number of collisions that have occured. This can be used to calculate statistical quantities of collisional systems.
+:   This variable keeps track of the number of collisions that have occurred. This can be used to calculate statistical quantities of collisional systems.
 
 `#!c double (*coefficient_of_restitution) (const struct reb_simulation* const r, double v)`
 :   This is a callback function which gets called when a hard-sphere collision occurs and the coefficient of restitution is required.
-    By default, this function pointer is NULL and a coefficient of resitution of 1 is assumed.
+    By default, this function pointer is NULL and a coefficient of restitution of 1 is assumed.
     The impact velocity of the collision is given to allow for velocity dependent coefficients of restitution.
 
 ## Miscellaneous 
@@ -271,7 +271,7 @@ To keep the documentation concise, variables which are only intended for interna
 :   Sleep this number of microseconds after each timestep. This can be useful for slowing down the simulation, for example for rendering visualizations.  
 
 `#!c int nghostx, nghosty,  nghostz`               
-:   Number of ghostboxes in x, y, and z directions. 
+:   Number of ghost-boxes in x, y, and z directions. 
 
 `#!c unsigned int rand_seed`    
 :   Seed for random number generators. This will be automatically initialized automatically to a random number based on the current time and the process id. However, it can also be set manually to make the simulation reproducible and always return the same sequence of random numbers.

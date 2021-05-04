@@ -78,7 +78,7 @@ See [Rein & Liu](https://ui.adsabs.harvard.edu/abs/2012A%26A...537A.128R/abstrac
 
 You might encounter the `reb_ghostbox` structure in various parts of the code, for example in function related to gravity calculation and collision detection. 
 It contains the relative position and velocity of a ghostbox.
-If there are no ghostboxed used, then all elements of this structure will be zero.
+If there are no ghostboxes used, then all elements of this structure will be zero.
 
 ## Shear
 ![Shearing sheet](img/shear.png)

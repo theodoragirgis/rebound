@@ -1,6 +1,6 @@
 # Moving reference frames
-Compared to other N-body codes, REBOUND does not use a predifined coordinate system. 
-It works in any intertial frame.
+Compared to other N-body codes, REBOUND does not use a predefined coordinate system. 
+It works in any inertial frame.
 This makes setting up simulations and interpreting outputs more intuitive. 
 However, one often wants to move to a specific coordinate system.
 REBOUND has several built-in functions to do that.
@@ -41,7 +41,7 @@ You can also move a simulation to the center-of-mass frame, the inertial frame w
     ```
 !!! Important
     If you are not in the center-of-mass frame, the center-of-mass will and all the particles will slowly drift away from the origin. 
-    This has important consequences for long-term intergrations. 
+    This has important consequences for long-term integrations. 
     If the particles are far away from the origin, you might increase the numerical errors due to finite floating point precision. 
     By moving to the center-of-mass frame after setting up all the particles, you avoid these issues.
 

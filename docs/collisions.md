@@ -136,7 +136,7 @@ It can also be set manually using the following syntax:
     sim.collision_resolve = "halt"
     ```
 
-### Hardsphere
+### Hard-sphere
 
 This assumes a hard-sphere collision. 
 This uses the `coefficient_of_restitution` parameter in `struct reb_simulation`. 
@@ -227,7 +227,7 @@ Here is a short example on how to write a simple custom collision resolve functi
     ```
 The first argument of the collision resolve function is a pointer to the simulation. 
 The second argument is a `reb_collision` structure. 
-It contains information about which particles are involved in the collision and, for periodic or shear-periodic [boundary conditions](boundaryconditions.md), if the collision occured accross a boundary:
+It contains information about which particles are involved in the collision and, for periodic or shear-periodic [boundary conditions](boundaryconditions.md), if the collision occurred across a boundary:
 
 `int p1`
 :   Index corresponding to one of the colliding particles

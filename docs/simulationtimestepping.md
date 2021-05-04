@@ -27,7 +27,7 @@ After the requested time has been reached, the timestep will be reverted back to
 
 There are cases where you don't want to reduce the timestep, for example in long term integrations with symplectic integrators.
 In those cases, you can ask REBOUND to integrate up to a given time and overshoot the requested time by a fraction of the timestep.
-This allows REBOUND to maintain a constant timestep throught the integration.
+This allows REBOUND to maintain a constant timestep throughout the integration.
 The following code shows you how to do that.
 === "C"
     ```c

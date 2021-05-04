@@ -32,13 +32,13 @@ This function outputs various status information on the screen. An example outpu
 N_tot=  10   t= 4610.00   dt= 4.000  cpu= 0.002472 [s]  t/tmax= 0.01%
 ```
 
-It shows the number of particles, the current time and timestep, as well as the time since the last output. If `tmax` is non-zero, then the last number indicates how far the similation has progressed. 
+It shows the number of particles, the current time and timestep, as well as the time since the last output. If `tmax` is non-zero, then the last number indicates how far the simulation has progressed. 
 
 ## ASCII orbits 
 ```c
 void reb_output_orbits(struct reb_simulation* r, char* filename);
 ```
-This function creates or appends an ASCII file with orbital paramters of all particles.
+This function creates or appends an ASCII file with orbital parameters of all particles.
 The orbital parameters are calculated in Jacobi coordinates.
 Particles are assumed to be sorted from the inside out, the central object having index 0. 
 Each time the function is called N-1 rows are appended to the file with name filename.

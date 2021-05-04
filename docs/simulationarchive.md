@@ -65,10 +65,10 @@ The following code automatically creates a Simulation Archive snapshot after a f
     This only affects very high accuracy simulation where you want to make sure the outputs occur exactly at the right timestep. 
 
 
-### Regular walltime interbals
-The following code automatically creates a Simulation Archive snapshot after a fixed walltime.
+### Regular wall-time interbals
+The following code automatically creates a Simulation Archive snapshot after a fixed wall-time.
 This is particularly useful for creating restart files when running long simulations.
-The walltime is given in seconds.
+The wall-time is given in seconds.
 == "C"
     ```c
     struct reb_simulation* r = reb_create_simulation();

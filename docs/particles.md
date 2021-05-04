@@ -3,7 +3,7 @@ A particle is represented by the `reb_particle` structure in C.
 The python class `Particle` is an abstraction of the `reb_particle` structure in C.
 We will refer to both the C structure and the python object interchangeably as the *particle structure* and *particle object*.
 
-The particle object constains the follwoing variables which can be directly manipulated:
+The particle object contains the following variables which can be directly manipulated:
 
 `#!c double m`
 :   mass

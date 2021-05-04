@@ -19,8 +19,8 @@ This triggers the following tasks:
     location of the shared library is located.
 4.  Finally it compiles your own code, the `problem.c` file and links it to the REBOUND shared library.
 
-You can execute your program with `./rebound`. After you edited either the `problem.c` file or any file in the `src/` directorty, you can simply type `make` again to recompile your program. 
-If you change any of the environment variables, clean the build directiory first, by executing `make clean`.
+You can execute your program with `./rebound`. After you edited either the `problem.c` file or any file in the `src/` directory, you can simply type `make` again to recompile your program. 
+If you change any of the environment variables, clean the build directory first, by executing `make clean`.
 
 ## Your own project
 

@@ -5,7 +5,7 @@ That might be confusing at first if you're used to working in SI units.
 The reason for setting $G=1$ is that gravity is scale-free.
 Imagine a simulation with two particles orbiting each other.
 For REBOUND, it doesn't matter if this is a planet orbiting a star, a moon orbiting a planet, or a spacecraft orbiting a moon.
-It is only a matter of interpretating the simulation. 
+It is only a matter of interpreting the simulation. 
 
 As an example, suppose we use $G=1$, have a central object of mass $M$, and a test particle orbiting on a circular orbit at a distance $a=1$. 
 This scenario can be setup with the following code:
@@ -49,7 +49,7 @@ The orbit of the particle still has a period of $2\pi$ in our units, but this wo
 
 !!! Info
     One advantage of keeping $G=1$ is that you can choose units where all number in REBOUND have a magnitude of around one, as in the example above. 
-    If you where to choose other units involving centimeters or seconds, then you would have to deal with very large or very small numbers.
+    If you where to choose other units involving centimetres or seconds, then you would have to deal with very large or very small numbers.
 
 ## Changing G
 If you prefer to change the value of $G$, you can!
